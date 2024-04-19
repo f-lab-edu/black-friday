@@ -25,4 +25,7 @@ public class ProductDefaultDto extends BaseDto {
     /**상품제목*/
     private String pTitle = "";
 
+    /**카테고리*/
+    private String categCd = "";
+
 }

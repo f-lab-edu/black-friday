@@ -1,13 +1,12 @@
-package com.flab.blackfriday.auth.member.web;
+package com.flab.blackfriday.auth.member.controller;
 
 import com.flab.blackfriday.auth.member.dto.MemberDto;
 import com.flab.blackfriday.auth.member.dto.MemberRequest;
 import com.flab.blackfriday.auth.member.service.MemberService;
 import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
-import com.flab.blackfriday.common.web.BaseModuleController;
+import com.flab.blackfriday.common.controller.BaseModuleController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

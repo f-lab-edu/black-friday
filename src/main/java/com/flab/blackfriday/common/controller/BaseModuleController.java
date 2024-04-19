@@ -1,4 +1,4 @@
-package com.flab.blackfriday.common.web;
+package com.flab.blackfriday.common.controller;
 
 /**
  * packageName    : com.flab.blackfriday.common.web

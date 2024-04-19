@@ -31,6 +31,9 @@ public class ProductDto {
     /**카테고리 코드*/
     private String categCd = "";
 
+    /**카테고리 명칭*/
+    private String categNm = "";
+
     /**상품 제목*/
     private String pTitle = "";
 

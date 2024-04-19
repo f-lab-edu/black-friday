@@ -25,13 +25,19 @@ import java.time.LocalDateTime;
 public class CategoryDto {
 
     /**카테고리 코드*/
-    private String categCd;
+    private String categCd = "";
+
+    /**부모 코드*/
+    private String parentCd = "";
     
     /**카테고리 명*/
-    private String categNm;
+    private String categNm = "";
 
     /**정렬*/
     private int ord = 0;
+
+    /**사용유무*/
+    private String useYn = "";
     
     /**등록일자*/
     private LocalDateTime createDate;
@@ -45,6 +51,26 @@ public class CategoryDto {
      */
     public Category toEntity(){
         return Category.builder().dto(this).build();
+    }
+
+    public CategoryDto(Category entity){
+        this.categCd = entity.getCategCd();
+        this.parentCd = entity.getParentCd();
+        this.categNm = entity.getCategNm();
+        this.ord = entity.getOrd();
+        this.useYn = entity.getUseYn();
+        this.createDate = entity.getCreateDate();
+        this.modifyDate = entity.getModifyDate();
+    }
+
+    public static CategoryDto requestOf(CategoryRequest request){
+        CategoryDto dto = new CategoryDto();
+        dto.setCategCd(request.getCategCd());
+        dto.setParentCd(request.getParentCd());
+        dto.setCategNm(request.getCategNm());
+        dto.setOrd(request.getOrd());
+        dto.setUseYn(request.getUseYn());
+        return dto;
     }
     
 }

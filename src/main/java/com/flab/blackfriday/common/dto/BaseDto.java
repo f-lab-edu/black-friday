@@ -1,5 +1,7 @@
 package com.flab.blackfriday.common.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,6 +21,8 @@ import java.util.Map;
  * -----------------------------------------------------------
  * 2024-04-18        rhkdg       최초 생성
  */
+@Getter
+@Setter
 public class BaseDto implements Serializable {
 
     /**공통 입력*/

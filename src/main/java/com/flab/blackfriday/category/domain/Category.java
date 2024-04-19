@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -28,12 +29,16 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Category {
+public class Category implements Persistable<String> {
 
     @Id
     @Column(length = 50)
     @Comment("카테고리 코드")
     private String categCd; //카테고리코드
+
+    @Comment("부모 코드")
+    @Column(length = 50)
+    private String parentCd;
 
     @Comment("카테고리 명칭")
     @Column(length = 100)
@@ -41,6 +46,10 @@ public class Category {
 
     @Comment("정렬 순서")
     private int ord = 0; //정렬 순서
+
+    @Comment("사용유무")
+    @Column(columnDefinition = "char", length = 1)
+    private String useYn;
 
     @Comment("등록일자")
     @CreatedDate
@@ -53,6 +62,7 @@ public class Category {
     @Builder
     public Category(CategoryDto dto) {
         this.categCd = dto.getCategCd();
+        this.parentCd = dto.getParentCd();
         this.categNm = dto.getCategNm();
         this.ord = dto.getOrd();
         this.createDate = dto.getCreateDate();
@@ -63,4 +73,13 @@ public class Category {
         this.categCd = categCd;
     }
 
+    @Override
+    public String getId() {
+        return this.categCd;
+    }
+
+    @Override
+    public boolean isNew() {
+        return (this.categCd == null || this.categCd.isEmpty()) && this.createDate == null;
+    }
 }

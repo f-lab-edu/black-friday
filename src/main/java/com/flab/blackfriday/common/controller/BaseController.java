@@ -1,4 +1,4 @@
-package com.flab.blackfriday.common.web;
+package com.flab.blackfriday.common.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +24,8 @@ public class BaseController {
 
     /**결과 처리 Map*/
     protected Map<String,Object> modelMap = null;
+
+    protected final String MGN_URL = "/mgn";
 
     //modelMap 초기화
     @ModelAttribute
