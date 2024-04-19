@@ -1,0 +1,51 @@
+Configutation:
+  name: Default
+  status: debug
+
+  Properties:
+    Property:
+      name: log-path
+      value: "C:/temp/log/2024/"
+       
+  Appenders:
+    Console:
+      name: Console_Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%F] %c{1} - %msg%n"
+    File:
+      name: File_Appender
+      fileName: ${log-path}/blackfriday/web.log
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%F] %c{1} - %msg%n"
+    RollingFile:
+      - name: RollingFile_Appender
+        fileName: ${log-path}/blackfriday/rollingfile.log
+        filePattern: "${log-path}/dailyroutine/web.log_%d{yyyy-MM-dd}.gz"
+        PatternLayout:
+          pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t][%F] %c{1} - %msg%n"
+        Policies:
+          TimeBasedTriggeringPolicy:
+            Interval: 1
+            modulate: true
+        DefaultRollOverStrategy:
+          Delete: 
+            basePath: "${log-path}/blackfriday"
+            maxDepth: "1" 
+            IfAccumulatedFileCount: 
+              exceeds: 31
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console_Appender
+        - ref: File_Appender
+        - ref: RollingFile_Appender
+    Logger:
+      - name: com.flab.blackfriday
+        additivity: false
+        level: info
+        AppenderRef:
+          - ref: Console_Appender
+          - ref: File_Appender
+          - ref: RollingFile_Appender

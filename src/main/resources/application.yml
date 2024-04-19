@@ -1,0 +1,46 @@
+spring:
+  profiles:
+    group:
+      local : local, common
+    active: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/blackfriday?serverTimezone=UTC&characterEncoding=UTF-8
+    username: blackfriday
+    password: blackfriday
+    tomcat:
+       initial-size: 20
+       max-idle: 15
+       min-idle: 8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        # show_sql: true
+        # format_sql: true
+        default_batch_fetch_size: 500  #??? ?? ???? ?? ??
+
+
+logging:
+  config: classpath:log4j2.xml
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: debug
+
