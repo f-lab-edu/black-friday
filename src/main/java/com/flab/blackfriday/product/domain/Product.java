@@ -2,6 +2,7 @@ package com.flab.blackfriday.product.domain;
 
 import com.flab.blackfriday.category.domain.Category;
 import com.flab.blackfriday.product.dto.ProductDto;
+import com.flab.blackfriday.product.dto.ProductItemDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,9 +10,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packageName    : com.flab.blackfriday.product.domain
@@ -29,7 +33,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Product {
+public class Product implements Persistable<String> {
 
     @Id
     @Comment("상품번호")
@@ -62,6 +66,10 @@ public class Product {
     @LastModifiedDate
     private LocalDateTime modifyDate; //수정일자
 
+
+    @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.LAZY)
+    List<ProductItem> itemList = new ArrayList<>();
+
     @Builder
     public Product(ProductDto dto) {
         this.pNum = dto.getPNum();
@@ -76,8 +84,22 @@ public class Product {
     }
 
 
+    public void addProductItem(ProductItem item){
+        this.itemList.add(item);
+    }
+
+
     public void addPnum(String pNum){
         this.pNum = pNum;
     }
 
+    @Override
+    public String getId() {
+        return this.pNum;
+    }
+
+    @Override
+    public boolean isNew() {
+        return (this.createDate == null && (this.pNum == null || this.pNum.isEmpty()));
+    }
 }

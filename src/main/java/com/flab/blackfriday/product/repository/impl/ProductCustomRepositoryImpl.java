@@ -2,7 +2,9 @@ package com.flab.blackfriday.product.repository.impl;
 
 import com.flab.blackfriday.category.domain.QCategory;
 import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
+import com.flab.blackfriday.product.domain.ProductItem;
 import com.flab.blackfriday.product.domain.QProduct;
+import com.flab.blackfriday.product.domain.QProductItem;
 import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductItemDto;
@@ -167,11 +169,19 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
 
     @Override
     public List<ProductItemDto> selectProductItemList(ProductDefaultDto searchDto) throws Exception {
-        return null;
+        QProductItem qProductItem = QProductItem.productItem;
+        List<ProductItem> list = jpaQueryFactory.selectFrom(qProductItem)
+                .where(new BooleanBuilder().and(qProductItem.product.pNum.eq(searchDto.getPNum())))
+                .fetch();
+        return list.stream().map(ProductItemDto::new).toList();
     }
 
     @Override
     public ProductItemDto selectProductItem(ProductItemDto dto) throws Exception {
-        return null;
+        QProductItem qProductItem =QProductItem.productItem;
+        ProductItem item = jpaQueryFactory.selectFrom(qProductItem)
+                .where(new BooleanBuilder().and(qProductItem.idx.eq(dto.getIdx())))
+                .fetchFirst();
+        return item == null ? null : new ProductItemDto(item);
     }
 }

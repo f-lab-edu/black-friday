@@ -54,5 +54,16 @@ public class ProductItemDto {
     public ProductItem toEntity() {
         return ProductItem.builder().dto(this).build();
     }
+
+    public ProductItemDto (ProductItem entity){
+        this.idx=  entity.getIdx();
+        this.pNum = entity.getProduct().getPNum();
+        this.pItmName = entity.getPItmName();
+        this.pItmPrice = entity.getPItmPrice();
+        this.pItmCnt = entity.getPItmCnt();
+        this.pItmRemark = entity.getPItmRemark();
+        this.createDate = entity.getCreateDate();
+        this.modifyDate = entity.getModifyDate();
+    }
     
 }
