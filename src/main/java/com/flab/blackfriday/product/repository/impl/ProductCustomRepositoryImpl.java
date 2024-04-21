@@ -4,17 +4,21 @@ import com.flab.blackfriday.category.domain.QCategory;
 import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
 import com.flab.blackfriday.product.domain.ProductItem;
 import com.flab.blackfriday.product.domain.QProduct;
+import com.flab.blackfriday.product.domain.QProductBlackFriday;
 import com.flab.blackfriday.product.domain.QProductItem;
 import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductItemDto;
+import com.flab.blackfriday.product.dto.ProductSummaryResponse;
 import com.flab.blackfriday.product.repository.ProductCustomRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.expression.spel.ast.Projection;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -41,6 +45,7 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
     public BooleanBuilder commonQuery(ProductDefaultDto searchDto) throws Exception {
         BooleanBuilder sql = new BooleanBuilder();
         QProduct qProduct = QProduct.product;
+        QProductBlackFriday qProductBlackFriday  = QProductBlackFriday.productBlackFriday;
         if(searchDto.getSstring() != null && !searchDto.getSstring().isEmpty()){
             if(searchDto.getStype().equals("title")){
                 sql.and(qProduct.pTitle.like("%"+searchDto.getSstring()+"%"));
@@ -52,6 +57,10 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
         if(searchDto.getCategCd() != null && !searchDto.getCategCd().isEmpty()){
             sql.and(qProduct.category.categCd.eq(searchDto.getCategCd()));
         }
+        //블랙 프라이데이 사용유무
+        if(searchDto.getBlackFridayUseYn() != null && !searchDto.getBlackFridayUseYn().isEmpty()){
+            sql.and(qProductBlackFriday.useYn.eq(searchDto.getBlackFridayUseYn()));
+        }
         return sql;
     }
 
@@ -62,69 +71,87 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
      * @throws Exception
      */
     @Override
-    public Page<ProductDto> selectProductPageList(ProductDefaultDto searchDto) throws Exception {
+    public Page<ProductSummaryResponse> selectProductPageList(ProductDefaultDto searchDto) throws Exception {
         QProduct qProduct = QProduct.product;
         QCategory qCategory = QCategory.category;
         long totCnt = jpaQueryFactory.select(qProduct.count()).from(qProduct)
                 .where(commonQuery(searchDto)).fetchFirst();
 
-        List<Tuple> list = jpaQueryFactory.select(
-                    qProduct.pNum,
-                qProduct.pTitle,
-                qProduct.category.categCd,
-                qProduct.pContent,
-                qCategory.categNm
+        List<ProductSummaryResponse> list = jpaQueryFactory.select(
+                    Projections.constructor(ProductSummaryResponse.class,
+                            qProduct.pNum,
+                            qProduct.pTitle,
+                            qProduct.category.categCd,
+                            qCategory.categNm
+                    )
                 )
                 .from(qProduct)
                 .leftJoin(qCategory).on(qCategory.categCd.eq(qProduct.category.categCd))
+                .fetchJoin()
                 .where(commonQuery(searchDto))
                 .offset(searchDto.getPageable().getOffset())
                 .limit(searchDto.getPageable().getPageSize())
                 .fetch();
 
-        List<ProductDto> resultList = new ArrayList<>();
-        for(Tuple tp : list) {
-            ProductDto productDto = new ProductDto();
-            productDto.setPNum(tp.get(qProduct.pNum));
-            productDto.setPTitle(tp.get(qProduct.pTitle));
-            productDto.setPContent(tp.get(qProduct.pContent));
-            productDto.setCategCd(tp.get(qProduct.category.categCd));
-            productDto.setCategNm(tp.get(qCategory.categNm));
-            resultList.add(productDto);
-        }
-
-        return new PageImpl<>(resultList,searchDto.getPageable(),totCnt);
+        return new PageImpl<>(list,searchDto.getPageable(),totCnt);
     }
 
     @Override
-    public List<ProductDto> selectProductList(ProductDefaultDto searchDto) throws Exception {
+    public Page<ProductSummaryResponse> selectProductBlackFridayPageList(ProductDefaultDto searchDto) throws Exception {
+        QProduct qProduct = QProduct.product;
+        QProductBlackFriday qProductBlackFriday = QProductBlackFriday.productBlackFriday;
+        QCategory qCategory = QCategory.category;
+
+        long totCnt = jpaQueryFactory.select(qProduct.count())
+                .from(qProduct)
+                .join(qCategory).on(qProduct.category.categCd.eq(qCategory.categCd))
+                .fetchJoin()
+                .join(qProductBlackFriday).on(qProduct.pNum.eq(qProductBlackFriday.product.pNum))
+                .fetchJoin()
+                .where(commonQuery(searchDto)).fetchFirst();
+
+        List<ProductSummaryResponse> list = jpaQueryFactory.select(
+                        Projections.fields(ProductSummaryResponse.class,
+                                qProduct.pNum,
+                                qProduct.pTitle,
+                                qProduct.category.categCd,
+                                qCategory.categNm,
+                                qProductBlackFriday.sale
+                        )
+                )
+                .from(qProduct)
+                .join(qCategory).on(qProduct.category.categCd.eq(qCategory.categCd))
+                .fetchJoin()
+                .join(qProductBlackFriday).on(qProduct.pNum.eq(qProductBlackFriday.product.pNum))
+                .fetchJoin()
+                .where(commonQuery(searchDto))
+                .offset(searchDto.getPageable().getOffset())
+                .limit(searchDto.getPageable().getPageSize())
+                .fetch();
+
+        return new PageImpl<>(list,searchDto.getPageable(),totCnt);
+    }
+
+    @Override
+    public List<ProductSummaryResponse> selectProductList(ProductDefaultDto searchDto) throws Exception {
         QProduct qProduct = QProduct.product;
         QCategory qCategory = QCategory.category;
 
-        List<Tuple> list = jpaQueryFactory.select(
-                        qProduct.pNum,
-                        qProduct.pTitle,
-                        qProduct.category.categCd,
-                        qProduct.pContent,
-                        qCategory.categNm
+        List<ProductSummaryResponse> list = jpaQueryFactory.select(
+                        Projections.constructor(ProductSummaryResponse.class,
+                                qProduct.pNum,
+                                qProduct.pTitle,
+                                qProduct.category.categCd,
+                                qCategory.categNm
+                        )
                 )
                 .from(qProduct)
                 .leftJoin(qCategory).on(qCategory.categCd.eq(qProduct.category.categCd))
+                .fetchJoin()
                 .where(commonQuery(searchDto))
                 .fetch();
 
-        List<ProductDto> resultList = new ArrayList<>();
-        for(Tuple tp : list) {
-            ProductDto productDto = new ProductDto();
-            productDto.setPNum(tp.get(qProduct.pNum));
-            productDto.setPTitle(tp.get(qProduct.pTitle));
-            productDto.setPContent(tp.get(qProduct.pContent));
-            productDto.setCategCd(tp.get(qProduct.category.categCd));
-            productDto.setCategNm(tp.get(qCategory.categNm));
-            resultList.add(productDto);
-        }
-
-        return resultList;
+        return list;
     }
 
     /**
@@ -148,7 +175,7 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
                     qProduct.modifyDate
                 )
                 .from(qProduct)
-                .leftJoin(qCategory).on(qCategory.categCd.eq(qProduct.category.categCd))
+                .leftJoin(qCategory).on(qCategory.categCd.eq(qProduct.category.categCd)).fetchJoin()
                 .where(new BooleanBuilder().and(qProduct.pNum.eq(dto.getPNum())))
                 .fetch();
 

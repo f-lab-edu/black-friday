@@ -45,5 +45,14 @@ public class ProductBlackFridayDto {
     public ProductBlackFriday toEntity() {
         return ProductBlackFriday.builder().dto(this).build();
     }
+
+    public ProductBlackFridayDto(ProductBlackFriday entity){
+        this.idx = entity.getIdx();
+        this.pNum = entity.getProduct().getPNum();
+        this.sale = entity.getSale();
+        this.useYn = entity.getUseYn();
+        this.createDate = entity.getCreateDate();
+        this.modifyDate = entity.getModifyDate();
+    }
     
 }

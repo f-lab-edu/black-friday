@@ -2,9 +2,8 @@ package com.flab.blackfriday.product.service;
 
 import com.flab.blackfriday.product.domain.Product;
 import com.flab.blackfriday.product.domain.ProductItem;
-import com.flab.blackfriday.product.dto.ProductDefaultDto;
-import com.flab.blackfriday.product.dto.ProductDto;
-import com.flab.blackfriday.product.dto.ProductItemDto;
+import com.flab.blackfriday.product.dto.*;
+import com.flab.blackfriday.product.repository.ProductBlackFridayRepository;
 import com.flab.blackfriday.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    private final ProductBlackFridayRepository productBlackFridayRepository;
+
 
     /**
      * 목록 조회(페이징 o)
@@ -38,8 +39,18 @@ public class ProductService {
      * @return
      * @throws Exception
      */
-    public Page<ProductDto> selectProductPageList(ProductDefaultDto searchDto) throws Exception {
+    public Page<ProductSummaryResponse> selectProductPageList(ProductDefaultDto searchDto) throws Exception {
         return productRepository.selectProductPageList(searchDto);
+    }
+
+    /**
+     * 블랙 프라이데이 포함된 목록 조회(페이징 o)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    public Page<ProductSummaryResponse> selectProductBlackFridayPageList(ProductDefaultDto searchDto) throws Exception {
+        return productRepository.selectProductBlackFridayPageList(searchDto);
     }
 
     /**
@@ -48,7 +59,7 @@ public class ProductService {
      * @return
      * @throws Exception
      */
-    public List<ProductDto> selectProductList(ProductDefaultDto searchDto) throws Exception {
+    public List<ProductSummaryResponse> selectProductList(ProductDefaultDto searchDto) throws Exception {
         return productRepository.selectProductList(searchDto);
     }
 
@@ -59,7 +70,7 @@ public class ProductService {
      * @throws Exception
      */
     public ProductDto selectProduct(ProductDto dto) throws Exception{
-        dto = selectProduct(dto);
+        dto = productRepository.selectProduct(dto);
         if(dto != null){
             ProductDefaultDto searchDto = new ProductDefaultDto();
             searchDto.setPNum(dto.getPNum());
@@ -92,5 +103,45 @@ public class ProductService {
     @Transactional
     public void deleteProduct(ProductDto dto) throws Exception {
         productRepository.delete(dto.toEntity());
+    }
+
+    /**
+     * 블랙 프라이데이 목록 조횡 (페이징 o)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    public Page<ProductBlackFridayDto> selectProductBlackFridayPageList(ProductBlackFridayDefaultDto searchDto) throws Exception {
+        return productBlackFridayRepository.selectProductBlackFridayPageList(searchDto);
+    }
+
+    /**
+     * 블랙 프라이데이 상세 조회
+     * @param dto
+     * @return
+     * @throws Exception
+     */
+    public ProductBlackFridayDto selectProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
+        return productBlackFridayRepository.selectProductBlackFriday(dto);
+    }
+
+    /**
+     * 블랙 프라이데이 등록, 삭제
+     * @param dto
+     * @throws Exception
+     */
+    @Transactional
+    public void saveProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
+        productBlackFridayRepository.save(dto.toEntity());
+    }
+
+    /**
+     * 블랙 프라이데이 삭제
+     * @param dto
+     * @throws Exception
+     */
+    @Transactional
+    public void deleteProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
+        productBlackFridayRepository.deleteById(dto.getIdx());
     }
 }

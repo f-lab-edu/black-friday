@@ -28,4 +28,7 @@ public class ProductDefaultDto extends BaseDto {
     /**카테고리*/
     private String categCd = "";
 
+    /**블랙 프라이데이 사용유무 */
+    private String blackFridayUseYn = "";
+
 }

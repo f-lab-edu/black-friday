@@ -26,6 +26,8 @@ public class QProduct extends EntityPathBase<Product> {
 
     public final DateTimePath<java.time.LocalDateTime> createDate = createDateTime("createDate", java.time.LocalDateTime.class);
 
+    public final ListPath<ProductItem, QProductItem> itemList = this.<ProductItem, QProductItem>createList("itemList", ProductItem.class, QProductItem.class, PathInits.DIRECT2);
+
     public final DateTimePath<java.time.LocalDateTime> modifyDate = createDateTime("modifyDate", java.time.LocalDateTime.class);
 
     public final NumberPath<Integer> ord = createNumber("ord", Integer.class);

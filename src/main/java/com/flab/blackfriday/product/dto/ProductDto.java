@@ -52,6 +52,10 @@ public class ProductDto {
     /**수정 일자*/
     private LocalDateTime modifyDate;
 
+    /**블렉프라이데이 설정 정보*/
+    private ProductBlackFridayDto productBlackFridayDto = new ProductBlackFridayDto();
+
+    /**옵션 정보*/
     private List<ProductItemDto> itemList = new ArrayList<>();
 
     /**
@@ -60,6 +64,26 @@ public class ProductDto {
      */
     public Product toEntity() {
         return Product.builder().dto(this).build();
+    }
+
+
+    public static ProductDto requestOf(ProductRequest productRequest) {
+        ProductDto dto = new ProductDto();
+        dto.setPNum(productRequest.getPNum());
+        dto.setPTitle(productRequest.getPTitle());
+        dto.setCategCd(productRequest.getCategCd());
+        dto.setPContent(productRequest.getPContent());
+        dto.setUseYn(productRequest.getUseYn());
+        for(ProductItemRequest item : productRequest.getItemList()){
+            ProductItemDto itemDto = new ProductItemDto();
+            itemDto.setIdx(item.getIdx());
+            itemDto.setPNum(dto.getPNum());
+            itemDto.setPItmName(item.getPItmName());
+            itemDto.setPItmCnt(item.getPItmCnt());
+            itemDto.setPItmRemark(item.getPItmRemark());
+            dto.getItemList().add(itemDto);
+        }
+        return dto;
     }
     
 }

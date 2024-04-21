@@ -39,7 +39,7 @@ spring:
 
 
 logging:
-  config: classpath:log4j2.xml
+  config: classpath:log4j2.yml
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: debug

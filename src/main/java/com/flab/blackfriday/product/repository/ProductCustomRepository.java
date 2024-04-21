@@ -3,6 +3,7 @@ package com.flab.blackfriday.product.repository;
 import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductItemDto;
+import com.flab.blackfriday.product.dto.ProductSummaryResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -26,7 +27,16 @@ public interface ProductCustomRepository {
      * @return
      * @throws Exception
      */
-    Page<ProductDto> selectProductPageList(ProductDefaultDto searchDto) throws Exception;
+    Page<ProductSummaryResponse> selectProductPageList(ProductDefaultDto searchDto) throws Exception;
+
+    /**
+     * 블랙 프라이데이 적용 목록 (페이징 ㅇ)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    Page<ProductSummaryResponse> selectProductBlackFridayPageList(ProductDefaultDto searchDto) throws Exception;
+
 
     /**
      * 목록 페이지
@@ -34,7 +44,7 @@ public interface ProductCustomRepository {
      * @return
      * @throws Exception
      */
-    List<ProductDto> selectProductList(ProductDefaultDto searchDto) throws Exception;
+    List<ProductSummaryResponse> selectProductList(ProductDefaultDto searchDto) throws Exception;
 
     /**
      * 상품 상세 조회
