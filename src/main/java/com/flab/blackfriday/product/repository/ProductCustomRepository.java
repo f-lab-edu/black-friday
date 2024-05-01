@@ -35,7 +35,7 @@ public interface ProductCustomRepository {
      * @return
      * @throws Exception
      */
-    Page<ProductSummaryResponse> selectProductBlackFridayPageList(ProductDefaultDto searchDto) throws Exception;
+    Page<ProductSummaryResponse> selectProductPageListWithBlackFriday(ProductDefaultDto searchDto) throws Exception;
 
 
     /**

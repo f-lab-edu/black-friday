@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
  * -----------------------------------------------------------
  * 2024/04/21        GAMJA       최초 생성
  */
-public interface ProductBlackFridayCustomRepository {
+public interface ProductCustomBlackFridayRepository {
 
     /**
      * 블랙 프라이데이 환경 정보 목록 조회

@@ -40,12 +40,8 @@ public class ProductController extends BaseController {
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/product/list")
-    public Map<String,Object> selectProductList(ProductDefaultDto searchDto) throws Exception {
-
-        Page<ProductSummaryResponse> resultList = productService.selectProductPageList(searchDto);
-        modelMap.put("productList",resultList);
-
-        return modelMap;
+    public Page<ProductSummaryResponse> selectProductList(ProductDefaultDto searchDto) throws Exception {
+        return productService.selectProductPageList(searchDto);
     }
 
     /**
@@ -55,14 +51,13 @@ public class ProductController extends BaseController {
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/product/view/{pNum}")
-    public Map<String,Object> selectProductView(@PathVariable("pNum") String pNum) throws Exception {
+    public ProductDto selectProductView(@PathVariable("pNum") String pNum) throws Exception {
 
         ProductDto productDto = new ProductDto();
         productDto.setPNum(pNum);
         productDto = productService.selectProduct(productDto);
-        modelMap.put("productDto",productDto);
 
-        return modelMap;
+        return productDto;
     }
 
     /**

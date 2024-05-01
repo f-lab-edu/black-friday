@@ -1,6 +1,7 @@
 package com.flab.blackfriday.auth.member.dto;
 
 import com.flab.blackfriday.auth.member.domain.Member;
+import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -49,18 +50,19 @@ public class MemberDto {
     public static MemberDto of(Member entity){
         MemberDto dto = new MemberDto();
         dto.setId(entity.getId());
-        dto.setPassword(dto.getPassword());
-        dto.setNickname(dto.getNickname());
-        dto.setCreateDate(dto.getCreateDate());
-        dto.setModifyDate(dto.getModifyDate());
+        dto.setPassword(entity.getPassword());
+        dto.setNickname(entity.getNickname());
+        dto.setCreateDate(entity.getCreateDate());
+        dto.setModifyDate(entity.getModifyDate());
         return dto;
     }
 
-    public MemberDto (MemberRequest req){
+    public static MemberDto createOf(MemberCreateRequest req){
         MemberDto dto = new MemberDto();
         dto.setId(req.getId());
-        dto.setPassword(req.getPassword());
+        dto.setPassword(PasswordEncoderTypeHandler.encode(req.getPassword()));
         dto.setNickname(req.getNickname());
+        return dto;
     }
 
 }

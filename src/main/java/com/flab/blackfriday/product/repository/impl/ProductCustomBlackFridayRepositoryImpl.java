@@ -6,16 +6,15 @@ import com.flab.blackfriday.product.domain.QProduct;
 import com.flab.blackfriday.product.domain.QProductBlackFriday;
 import com.flab.blackfriday.product.dto.ProductBlackFridayDefaultDto;
 import com.flab.blackfriday.product.dto.ProductBlackFridayDto;
-import com.flab.blackfriday.product.repository.ProductBlackFridayCustomRepository;
+import com.flab.blackfriday.product.repository.ProductCustomBlackFridayRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ import java.util.List;
  * 2024/04/21        GAMJA       최초 생성
  */
 @Repository
-public class ProductCustomBlackFridayRepositoryImpl extends BaseAbstractRepositoryImpl implements ProductBlackFridayCustomRepository {
+public class ProductCustomBlackFridayRepositoryImpl extends BaseAbstractRepositoryImpl implements ProductCustomBlackFridayRepository {
 
     protected ProductCustomBlackFridayRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
         super(entityManager, jpaQueryFactory);
@@ -58,8 +57,6 @@ public class ProductCustomBlackFridayRepositoryImpl extends BaseAbstractReposito
         QProductBlackFriday qProductBlackFriday = QProductBlackFriday.productBlackFriday;
         QProduct qProduct  = QProduct.product;
 
-        List<ProductBlackFridayDto> resultList = new ArrayList<>();
-
         long totCnt = jpaQueryFactory.select(qProductBlackFriday.count())
                 .from(qProductBlackFriday)
                 .leftJoin(qProduct).on(qProductBlackFriday.product.pNum.eq(qProduct.pNum))
@@ -67,13 +64,16 @@ public class ProductCustomBlackFridayRepositoryImpl extends BaseAbstractReposito
                 .where(commonQuery(searchDto))
                 .fetchFirst();
 
-        List<Tuple> list = jpaQueryFactory.select(
-                    qProductBlackFriday.idx,
-                    qProductBlackFriday.product.pNum,
-                    qProductBlackFriday.sale,
-                    qProductBlackFriday.useYn,
-                    qProductBlackFriday.createDate,
-                    qProductBlackFriday.modifyDate
+        List<ProductBlackFridayDto> list = jpaQueryFactory.select(
+                        Projections.constructor(
+                                ProductBlackFridayDto.class,
+                                qProductBlackFriday.idx,
+                                qProductBlackFriday.product.pNum,
+                                qProductBlackFriday.sale,
+                                qProductBlackFriday.useYn,
+                                qProductBlackFriday.createDate,
+                                qProductBlackFriday.modifyDate
+                        )
                 )
                 .from(qProductBlackFriday)
                 .leftJoin(qProduct).on(qProductBlackFriday.product.pNum.eq(qProduct.pNum))
@@ -83,19 +83,7 @@ public class ProductCustomBlackFridayRepositoryImpl extends BaseAbstractReposito
                 .limit(searchDto.getPageable().getPageSize())
                 .fetch();
 
-
-        for(Tuple tp : list) {
-            ProductBlackFridayDto dto = new ProductBlackFridayDto();
-            dto.setIdx(tp.get(qProductBlackFriday.idx));
-            dto.setPNum(tp.get(qProductBlackFriday.product.pNum));
-            dto.setSale(tp.get(qProductBlackFriday.sale) == null ? 0 : tp.get(qProductBlackFriday.sale));
-            dto.setUseYn(tp.get(qProductBlackFriday.useYn));
-            dto.setCreateDate(tp.get(qProductBlackFriday.createDate));
-            dto.setModifyDate(tp.get(qProductBlackFriday.modifyDate));
-            resultList.add(dto);
-        }
-
-        return new PageImpl<>(resultList,searchDto.getPageable(),totCnt);
+        return new PageImpl<>(list,searchDto.getPageable(),totCnt);
     }
 
     @Override

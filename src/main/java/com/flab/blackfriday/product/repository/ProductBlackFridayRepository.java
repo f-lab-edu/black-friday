@@ -15,5 +15,5 @@ import org.springframework.data.jpa.repository.Query;
  * -----------------------------------------------------------
  * 2024/04/21        GAMJA       최초 생성
  */
-public interface ProductBlackFridayRepository extends JpaRepository<ProductBlackFriday,Long>,ProductBlackFridayCustomRepository {
+public interface ProductBlackFridayRepository extends JpaRepository<ProductBlackFriday,Long>,ProductCustomBlackFridayRepository {
 }

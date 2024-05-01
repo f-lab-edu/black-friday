@@ -55,10 +55,14 @@ public class Member implements Persistable<String> {
     @Builder
     public Member(MemberDto dto) {
         this.id = dto.getId();
-        this.password = dto.getNickname();
+        this.password = dto.getPassword();
         this.nickname = dto.getNickname();
         this.createDate = dto.getCreateDate();
         this.modifyDate = dto.getModifyDate();
+    }
+
+    public void addNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void addId(String id){

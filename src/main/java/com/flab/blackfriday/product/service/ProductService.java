@@ -30,9 +30,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    private final ProductBlackFridayRepository productBlackFridayRepository;
-
-
     /**
      * 목록 조회(페이징 o)
      * @param searchDto
@@ -49,8 +46,8 @@ public class ProductService {
      * @return
      * @throws Exception
      */
-    public Page<ProductSummaryResponse> selectProductBlackFridayPageList(ProductDefaultDto searchDto) throws Exception {
-        return productRepository.selectProductBlackFridayPageList(searchDto);
+    public Page<ProductSummaryResponse> selectProductPageListWithBlackFriday(ProductDefaultDto searchDto) throws Exception {
+        return productRepository.selectProductPageListWithBlackFriday(searchDto);
     }
 
     /**
@@ -105,43 +102,4 @@ public class ProductService {
         productRepository.delete(dto.toEntity());
     }
 
-    /**
-     * 블랙 프라이데이 목록 조횡 (페이징 o)
-     * @param searchDto
-     * @return
-     * @throws Exception
-     */
-    public Page<ProductBlackFridayDto> selectProductBlackFridayPageList(ProductBlackFridayDefaultDto searchDto) throws Exception {
-        return productBlackFridayRepository.selectProductBlackFridayPageList(searchDto);
-    }
-
-    /**
-     * 블랙 프라이데이 상세 조회
-     * @param dto
-     * @return
-     * @throws Exception
-     */
-    public ProductBlackFridayDto selectProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
-        return productBlackFridayRepository.selectProductBlackFriday(dto);
-    }
-
-    /**
-     * 블랙 프라이데이 등록, 삭제
-     * @param dto
-     * @throws Exception
-     */
-    @Transactional
-    public void saveProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
-        productBlackFridayRepository.save(dto.toEntity());
-    }
-
-    /**
-     * 블랙 프라이데이 삭제
-     * @param dto
-     * @throws Exception
-     */
-    @Transactional
-    public void deleteProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
-        productBlackFridayRepository.deleteById(dto.getIdx());
-    }
 }

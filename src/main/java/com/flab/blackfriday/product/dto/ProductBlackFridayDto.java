@@ -1,6 +1,7 @@
 package com.flab.blackfriday.product.dto;
 
 import com.flab.blackfriday.product.domain.ProductBlackFriday;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductBlackFridayDto {
     
     /**일련번호*/
@@ -54,5 +56,4 @@ public class ProductBlackFridayDto {
         this.createDate = entity.getCreateDate();
         this.modifyDate = entity.getModifyDate();
     }
-    
 }

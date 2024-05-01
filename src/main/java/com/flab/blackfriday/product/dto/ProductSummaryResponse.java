@@ -1,9 +1,6 @@
 package com.flab.blackfriday.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * packageName    : com.flab.blackfriday.product.dto
@@ -19,7 +16,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ProductSummaryResponse {
 
     /**상품 번호*/
@@ -37,11 +33,21 @@ public class ProductSummaryResponse {
     /**할인율*/
     private int sale = 0;
 
-    public ProductSummaryResponse(String pNum, String pTitle, String categCd, String categNm){
+    public ProductSummaryResponse(String pNum, String pTitle, String categCd, String categNm, int sale){
         this.pNum = pNum;
         this.pTitle = pTitle;
         this.categCd = categCd;
         this.categNm = categNm;
+        this.sale = sale;
+    }
+
+    public static ProductSummaryResponse fromDto(ProductDto dto){
+        ProductSummaryResponse response = new ProductSummaryResponse();
+        response.setPNum(dto.getPNum());
+        response.setPTitle(dto.getPTitle());
+        response.setCategCd(dto.getCategCd());
+        response.setCategNm(dto.getCategNm());
+        return response;
     }
 
 }

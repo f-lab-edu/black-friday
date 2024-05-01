@@ -2,6 +2,7 @@ package com.flab.blackfriday.category.controller;
 
 import com.flab.blackfriday.category.dto.CategoryDefaultDto;
 import com.flab.blackfriday.category.dto.CategoryDto;
+import com.flab.blackfriday.category.dto.CategoryListAndTotCntResponse;
 import com.flab.blackfriday.category.dto.CategoryRequest;
 import com.flab.blackfriday.category.service.CategoryService;
 import com.flab.blackfriday.common.controller.BaseController;
@@ -38,31 +39,25 @@ public class CategoryController extends BaseController {
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/category/list")
-    public Map<String,Object> selectCategoryList(CategoryDefaultDto searchDto) throws Exception {
-
+    public CategoryListAndTotCntResponse selectCategoryList(CategoryDefaultDto searchDto) throws Exception {
         long totCnt = categoryService.selectCategoryTotalCount(searchDto);
         List<CategoryDto> resultList = categoryService.selectCategoryList(searchDto);
-        modelMap.put("resultList",resultList);
-        modelMap.put("totCnt",totCnt);
-
-        return modelMap;
+        return CategoryListAndTotCntResponse.of(resultList,totCnt);
     }
 
     /**
      * 상세 조회
      * @param categCd
-     * @return
+     * @return CategoryDto
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/category/view/{categCd}")
-    public Map<String,Object> selectCategory(@PathVariable String categCd) throws Exception {
+    public CategoryDto selectCategory(@PathVariable String categCd) throws Exception {
 
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategCd(categCd);
         categoryDto = categoryService.selectCategory(categoryDto);
-        modelMap.put("categoryDto",categoryDto);
-
-        return modelMap;
+        return categoryDto;
     }
 
     /**

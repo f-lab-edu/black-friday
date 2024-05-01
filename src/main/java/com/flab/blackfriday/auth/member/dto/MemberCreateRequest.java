@@ -1,6 +1,5 @@
 package com.flab.blackfriday.auth.member.dto;
 
-import com.flab.blackfriday.auth.member.domain.Member;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -21,7 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MemberRequest {
+public class MemberCreateRequest {
 
     /**아이디*/
     @NotNull(message = "아이디는 필수값입니다.")

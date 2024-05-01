@@ -4,6 +4,7 @@ import com.flab.blackfriday.common.controller.BaseController;
 import com.flab.blackfriday.product.domain.ProductBlackFriday;
 import com.flab.blackfriday.product.dto.ProductBlackFridayDefaultDto;
 import com.flab.blackfriday.product.dto.ProductBlackFridayDto;
+import com.flab.blackfriday.product.service.ProductBlackFridayService;
 import com.flab.blackfriday.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,8 @@ public class ProductBlackFridayController extends BaseController {
 
     private final ProductService productService;
 
+    private final ProductBlackFridayService productBlackFridayService;
+
     /**
      * 목록 조회
      * @param searchDto
@@ -37,12 +40,8 @@ public class ProductBlackFridayController extends BaseController {
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/product/blackfriday/list")
-    public Map<String,Object> selectProductBlackFridayList(ProductBlackFridayDefaultDto searchDto) throws Exception {
-
-        Page<ProductBlackFridayDto> resultList = productService.selectProductBlackFridayPageList(searchDto);
-        modelMap.put("productBlackFridayList",resultList);
-
-        return modelMap;
+    public Page<ProductBlackFridayDto> selectProductBlackFridayList(ProductBlackFridayDefaultDto searchDto) throws Exception {
+        return productBlackFridayService.selectProductBlackFridayPageList(searchDto);
     }
 
     /**
@@ -52,14 +51,12 @@ public class ProductBlackFridayController extends BaseController {
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/product/blackfriday/view/{idx}")
-    public Map<String,Object> selectProductBlackFridayView(@PathVariable("idx") long idx) throws Exception {
+    public ProductBlackFridayDto selectProductBlackFridayView(@PathVariable("idx") long idx) throws Exception {
 
         ProductBlackFridayDto dto = new ProductBlackFridayDto();
         dto.setIdx(idx);
-        dto = productService.selectProductBlackFriday(dto);
-        modelMap.put("productBlackFridayDto",dto);
-
-        return modelMap;
+        dto = productBlackFridayService.selectProductBlackFriday(dto);
+        return dto;
     }
 
 }

@@ -97,7 +97,7 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
     }
 
     @Override
-    public Page<ProductSummaryResponse> selectProductBlackFridayPageList(ProductDefaultDto searchDto) throws Exception {
+    public Page<ProductSummaryResponse> selectProductPageListWithBlackFriday(ProductDefaultDto searchDto) throws Exception {
         QProduct qProduct = QProduct.product;
         QProductBlackFriday qProductBlackFriday = QProductBlackFriday.productBlackFriday;
         QCategory qCategory = QCategory.category;
