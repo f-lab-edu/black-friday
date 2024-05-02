@@ -7,6 +7,8 @@ import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.auth.member.dto.MemberSummaryResponse;
 import com.flab.blackfriday.auth.member.service.MemberService;
 import com.flab.blackfriday.common.controller.BaseModuleController;
+import com.flab.blackfriday.common.exception.NoExistAuthException;
+import com.flab.blackfriday.common.response.CommonResponse;
 import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +36,11 @@ public class MemberUserController extends BaseModuleController {
 
     private final MemberService memberService;
 
-    private final JwtProvider jwtProvider;
-
     private final MemberSession memberSession;
 
     /**
      * 회원 정보 조회
-     * @param id
+     * @param
      * @return
      * @throws Exception
      */
@@ -48,8 +48,8 @@ public class MemberUserController extends BaseModuleController {
     public MemberSummaryResponse selectMypageMember() throws Exception {
 
         if(!memberSession.isAuthenticated()){
-            logger.error("### 회원 정보가 존재하지 않습니다. ### ");
-            return null;
+            logger.error("### 인증되지 않은 접근. ### ");
+            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
         }
 
         MemberDto memberDto = new MemberDto();
@@ -65,7 +65,7 @@ public class MemberUserController extends BaseModuleController {
      * @return
      * @throws Exception
      */
-    @PostMapping(API_URL+"/member/ins")
+    @PostMapping(API_URL+"/member/join")
     public ResponseEntity<?> createMember(@RequestBody @Valid final MemberCreateRequest memberRequest) throws Exception {
 
         try{
@@ -73,18 +73,15 @@ public class MemberUserController extends BaseModuleController {
             prevDto.setId(memberRequest.getId());
             prevDto = memberService.selectMember(prevDto);
             if(prevDto != null){
-                modelMap.put("msg", "이미 사용중인 아이디 입니다.");
-                return new ResponseEntity<>(modelMap,HttpStatus.FOUND);
+                return new ResponseEntity<>(new CommonResponse("이미 사용중인 아이디 입니다.",null),HttpStatus.FOUND);
             }
-            memberService.saveMember(MemberDto.createOf(memberRequest));
+            memberService.saveMember(memberRequest);
         }catch (Exception e){
             logger.error("create member error : {}",e.getMessage());
-            modelMap.put("msg","회원가입 진행시 오류가 발생했습니다.");
-            return new ResponseEntity<>(modelMap,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("회원가입 진행시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","회원가입 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return ResponseEntity.ok(new CommonResponse("회원가입 되었습니다.", null));
     }
 
     /**
@@ -103,19 +100,16 @@ public class MemberUserController extends BaseModuleController {
         prevDto = memberService.selectMember(prevDto);
 
         if(prevDto == null){
-            modelMap.put("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
-            return new ResponseEntity<>(modelMap, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new CommonResponse("아이디 또는 비밀번호가 일치하지 않습니다.",null), HttpStatus.UNAUTHORIZED);
         }
 
         if(!PasswordEncoderTypeHandler.matches(password,prevDto.getPassword())){
-            modelMap.put("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
-            return new ResponseEntity<>(modelMap, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new CommonResponse("아이디 또는 비밀번호가 일치하지 않습니다.",null), HttpStatus.UNAUTHORIZED);
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("token",memberSession.createToken(prevDto));
-        modelMap.put("msg","로그인에 성공하였습니다.");
-        return ResponseEntity.ok().headers(headers).body(modelMap);
+        return ResponseEntity.ok().headers(headers).body(new CommonResponse("로그인에 성공하였습니다.",null));
     }
 
     /**
@@ -126,6 +120,6 @@ public class MemberUserController extends BaseModuleController {
     @PostMapping(API_URL+"/member/logout")
     public ResponseEntity<?> logout() throws Exception {
         //로그아웃 처리
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("로그아웃 되었습니다.",null),HttpStatus.OK);
     }
 }

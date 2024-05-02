@@ -1,5 +1,6 @@
 package com.flab.blackfriday.auth.member.dto;
 
+import com.flab.blackfriday.auth.member.domain.Member;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -34,5 +35,13 @@ public class MemberCreateRequest {
     /**닉네임*/
     @NotNull(message = "닉네임은 필수값입니다.")
     private String nickname = "";
+
+    /**
+     * dto -> entity
+     * @return
+     */
+    public Member toCreateEntity() {
+        return Member.createMember().memberCreateRequest(this).build();
+    }
 
 }

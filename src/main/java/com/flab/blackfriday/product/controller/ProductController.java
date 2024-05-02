@@ -1,6 +1,7 @@
 package com.flab.blackfriday.product.controller;
 
 import com.flab.blackfriday.common.controller.BaseController;
+import com.flab.blackfriday.common.response.CommonResponse;
 import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductRequest;
@@ -73,12 +74,10 @@ public class ProductController extends BaseController {
             productService.saveProduct(ProductDto.requestOf(productRequest));
         }catch (Exception e){
             logger.error("### insert product error : {}",e.getMessage());
-            modelMap.put("msg","상품 정보 등록시 오류가 발생했습니다.");
-            return new ResponseEntity<>(modelMap, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("상품 정보 등록시 오류가 발생했습니다.",null), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","등록 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("등록 되었습니다.",null),HttpStatus.OK);
     }
 
     /**
@@ -93,12 +92,10 @@ public class ProductController extends BaseController {
             productService.saveProduct(ProductDto.requestOf(productRequest));
         }catch (Exception e) {
             logger.error("### update product error : {}",e.getMessage());
-            modelMap.put("msg","상품 정보 수정시 오류가 발생했습니다.");
-            return new ResponseEntity<>(modelMap,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("상품 정보 수정시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","수정 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("수정 되었습니다.",null),HttpStatus.OK);
     }
 
 
@@ -111,12 +108,10 @@ public class ProductController extends BaseController {
             productService.deleteProduct(dto);
         }catch (Exception e) {
             logger.error("### delete product error : {}",e.getMessage());
-            modelMap.put("msg","상품 정보 삭제시 오류가 발생했습니다.");
-            return new ResponseEntity<>(modelMap,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("상품 정보 삭제시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","삭제 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("삭제 되었습니다.",null),HttpStatus.OK);
     }
 
 }
