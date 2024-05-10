@@ -113,7 +113,7 @@ public class MemberUserController extends BaseModuleController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("token",memberSession.createToken(prevDto));
+        headers.set(HttpHeaders.AUTHORIZATION,memberSession.createToken(prevDto));
         modelMap.put("msg","로그인에 성공하였습니다.");
         return ResponseEntity.ok().headers(headers).body(modelMap);
     }

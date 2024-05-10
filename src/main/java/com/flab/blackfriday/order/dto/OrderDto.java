@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packageName    : com.flab.blackfriday.order.dto
@@ -47,12 +49,25 @@ public class OrderDto {
     /**수정일자*/
     private LocalDateTime modifyDate;
 
+    private List<OrderItemDto> itemList = new ArrayList<>();
+
     /**
      * dto -> entity
      * @return
      */
     public Order toEntity(){
         return Order.builder().dto(this).build();
+    }
+
+    public OrderDto (Order entity) {
+        this.idx = entity.getIdx();
+        this.pNum = entity.getProduct().getPNum();
+        this.id = entity.getMember().getId();
+        this.orderStatus = entity.getOrderStatusType().name();
+        this.payStatus = entity.getPayStatusType().name();
+        this.price = entity.getPrice();
+        this.createDate = entity.getCreateDate();
+        this.modifyDate = entity.getModifyDate();
     }
     
 }

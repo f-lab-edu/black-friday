@@ -46,13 +46,21 @@ public class OrderItemDto {
     /**수정일자*/
     private LocalDateTime modifyDate;
 
-    private List<OrderItemDto> itemList = new ArrayList<>();
-
     /**
      * dto -> entity
      * @return
      */
     public OrderItem toEntity() {
         return OrderItem.builder().dto(this).build();
+    }
+
+    public static OrderItemDto responseOf(OrderItemResponse response){
+        OrderItemDto itemDto = new OrderItemDto();
+        itemDto.setIdx(response.getIdx());
+        itemDto.setOIdx(response.getOIdx());
+        itemDto.setPitmIdx(response.getProductItemSummaryResponse().getIdx());
+        itemDto.setPCnt(response.getPCnt());
+        itemDto.setPrice(response.getPrice());
+        return itemDto;
     }
 }
