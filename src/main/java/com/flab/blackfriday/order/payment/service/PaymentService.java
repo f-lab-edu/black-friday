@@ -1,10 +1,12 @@
 package com.flab.blackfriday.order.payment.service;
 
+import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.order.dto.OrderDto;
 import com.flab.blackfriday.order.dto.OrderStatusType;
 import com.flab.blackfriday.order.dto.PayStatusType;
 import com.flab.blackfriday.order.payment.dto.PaymentResponse;
 import com.flab.blackfriday.order.payment.exception.PaymentFailException;
+import com.flab.blackfriday.order.payment.util.PaymentWebClientUtil;
 import com.flab.blackfriday.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,8 @@ public class PaymentService {
     @Value("${postman.url}")
     private String payUrl;
 
+    private final MemberSession memberSession;
+
     /**
      * 결제 처리
      * @param orderDto
@@ -50,13 +54,14 @@ public class PaymentService {
         String apiUrl = payUrl+"/postman/payment/v1/pay";
 
         try {
-            //결제 외부 api 호출
-            WebClient webClient = WebClient.builder().baseUrl(apiUrl).build();
-
+            if(orderDto == null){
+                throw new PaymentFailException("회원정보가 일치하지 않습니다.");
+            }
+            if (!orderDto.getId().equals(memberSession.getMemberSession().getId())) {
+                throw new PaymentFailException("회원정보가 일치하지 않습니다.");
+            }
             //결제 정보 response
-            PaymentResponse paymentResponse = webClient.post().bodyValue(requestMap)
-                    .retrieve().bodyToMono(PaymentResponse.class)
-                    .block();
+            PaymentResponse paymentResponse = PaymentWebClientUtil.sendPayment(apiUrl,requestMap);
 
             assert paymentResponse != null;
             if(paymentResponse.getStatus().equals("200")){
@@ -89,13 +94,14 @@ public class PaymentService {
         String apiUrl = payUrl+"/postman/payment/v1/cancel";
 
         try{
-            //결제 외부 api 호출
-            WebClient webClient = WebClient.builder().baseUrl(apiUrl).build();
-
+            if(orderDto == null){
+                throw new PaymentFailException("회원정보가 일치하지 않습니다.");
+            }
+            if (!orderDto.getId().equals(memberSession.getMemberSession().getId())) {
+                throw new PaymentFailException("회원정보가 일치하지 않습니다.");
+            }
             //결제 정보 response
-            PaymentResponse paymentResponse = webClient.post().bodyValue(requestMap)
-                    .retrieve().bodyToMono(PaymentResponse.class)
-                    .block();
+            PaymentResponse paymentResponse = PaymentWebClientUtil.sendPayment(apiUrl,requestMap);
 
             assert paymentResponse != null;
             if(paymentResponse.getStatus().equals("200")){

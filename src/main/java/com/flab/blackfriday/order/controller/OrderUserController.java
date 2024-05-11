@@ -3,20 +3,22 @@ package com.flab.blackfriday.order.controller;
 import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.common.controller.BaseModuleController;
 import com.flab.blackfriday.common.dto.ResultVO;
+import com.flab.blackfriday.order.dto.OrderDefaultDto;
 import com.flab.blackfriday.order.dto.OrderDto;
+import com.flab.blackfriday.order.dto.OrderSummaryResponse;
 import com.flab.blackfriday.order.dto.action.OrderCreateRequest;
+import com.flab.blackfriday.order.payment.exception.PaymentFailException;
 import com.flab.blackfriday.order.payment.service.PaymentService;
 import com.flab.blackfriday.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.apache.coyote.Response;
 import org.springframework.dao.UncategorizedDataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * packageName    : com.flab.blackfriday.order.controller
@@ -38,6 +40,29 @@ public class OrderUserController extends BaseModuleController {
     private final PaymentService paymentService;
 
     private final MemberSession memberSession;
+
+
+    /**
+     * 주문 목록
+     * @param orderDefaultDto
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(API_URL+"/order/list")
+    public Page<OrderSummaryResponse> selectOrderPageList(OrderDefaultDto orderDefaultDto) throws Exception {
+        if(!memberSession.isAuthenticated()){
+        }
+
+        return orderService.selectOrderPageList(orderDefaultDto);
+    }
+
+    @GetMapping(API_URL+"/order/{idx}")
+    public OrderDto selectOrderView(@PathVariable("idx") long idx) throws Exception {
+        OrderDto orderDto = new OrderDto();
+        orderDto = orderService.selectOrder(orderDto);
+
+        return null;
+    }
 
     /**
      * 주문 처리
@@ -73,8 +98,29 @@ public class OrderUserController extends BaseModuleController {
             orderDto = orderService.selectOrder(orderDto);
             paymentService.payment(orderDto);
         }catch (Exception e) {
-
+            logger.error("### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>("결제 처리시 오류가 발생했습니다.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return null;
-    } 
+        return ResponseEntity.ok().body(new ResultVO("OK","결제되었습니다."));
+    }
+
+    /**
+     * 결제 취소 요청
+     * @param idx
+     * @return
+     * @throws Exception
+     */
+    @PutMapping(API_URL+"/order/cancel")
+    public ResponseEntity<?> orderCancelPayment(@RequestParam("idx") long idx) throws Exception {
+        try{
+            OrderDto orderDto = new OrderDto();
+            orderDto.setIdx(idx);
+            orderDto = orderService.selectOrder(orderDto);
+            paymentService.cancel(orderDto);
+        }catch (Exception e) {
+            logger.error("### order pay cancel error : {}",e.getMessage());
+            return new ResponseEntity<>("결제 취소 처리시 오류가 발생했습니다.", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        return ResponseEntity.ok().body(new ResultVO("OK","취소되었습니다."));
+    }
 }
