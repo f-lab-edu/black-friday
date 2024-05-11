@@ -7,6 +7,8 @@ import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.auth.member.dto.MemberSummaryResponse;
 import com.flab.blackfriday.auth.member.service.MemberService;
 import com.flab.blackfriday.common.controller.BaseModuleController;
+import com.flab.blackfriday.common.exception.NoExistAuthException;
+import com.flab.blackfriday.common.response.CommonResponse;
 import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

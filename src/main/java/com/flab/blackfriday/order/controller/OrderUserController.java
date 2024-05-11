@@ -3,6 +3,7 @@ package com.flab.blackfriday.order.controller;
 import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.common.controller.BaseModuleController;
 import com.flab.blackfriday.common.dto.ResultVO;
+import com.flab.blackfriday.common.exception.NoExistAuthException;
 import com.flab.blackfriday.order.dto.OrderDefaultDto;
 import com.flab.blackfriday.order.dto.OrderDto;
 import com.flab.blackfriday.order.dto.OrderSummaryResponse;
@@ -51,17 +52,30 @@ public class OrderUserController extends BaseModuleController {
     @GetMapping(API_URL+"/order/list")
     public Page<OrderSummaryResponse> selectOrderPageList(OrderDefaultDto orderDefaultDto) throws Exception {
         if(!memberSession.isAuthenticated()){
+            logger.error("### 인증되지 않은 접근. ### ");
+            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
         }
-
         return orderService.selectOrderPageList(orderDefaultDto);
     }
 
+    /**
+     * 주문 상세 정보 조회
+     * @param idx
+     * @return
+     * @throws Exception
+     */
     @GetMapping(API_URL+"/order/{idx}")
     public OrderDto selectOrderView(@PathVariable("idx") long idx) throws Exception {
+        if(!memberSession.isAuthenticated()){
+            logger.error("### 인증되지 않은 접근. ### ");
+            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+        }
         OrderDto orderDto = new OrderDto();
         orderDto = orderService.selectOrder(orderDto);
-
-        return null;
+        if(orderDto == null || !orderDto.getId().equals(memberSession.getMemberSession().getId())){
+            throw new NoExistAuthException("해당 정보가 존재하지 않습니다.",HttpStatus.UNAUTHORIZED.name());
+        }
+        return orderDto;
     }
 
     /**
@@ -73,6 +87,11 @@ public class OrderUserController extends BaseModuleController {
     public ResponseEntity<?> insertOrder(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
 
         try{
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
             OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
             orderDto.setId(memberSession.getMemberSession().getId());
             orderService.insertOrder(orderDto);
@@ -93,6 +112,11 @@ public class OrderUserController extends BaseModuleController {
     @PostMapping(API_URL+"/order/pay")
     public ResponseEntity<?> orderPayment(@RequestParam("idx") long idx) throws Exception {
         try{
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
             OrderDto orderDto = new OrderDto();
             orderDto.setIdx(idx);
             orderDto = orderService.selectOrder(orderDto);
@@ -113,6 +137,11 @@ public class OrderUserController extends BaseModuleController {
     @PutMapping(API_URL+"/order/cancel")
     public ResponseEntity<?> orderCancelPayment(@RequestParam("idx") long idx) throws Exception {
         try{
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+            
             OrderDto orderDto = new OrderDto();
             orderDto.setIdx(idx);
             orderDto = orderService.selectOrder(orderDto);

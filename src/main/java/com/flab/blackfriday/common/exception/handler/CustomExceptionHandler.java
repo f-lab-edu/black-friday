@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
+
 /*
  * date           : 2024/05/03
  * description    : 컨트롤러 예외처리에 대한 응답처리 핸들러
@@ -38,7 +40,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(PaymentFailException.class)
     public ResponseEntity<?> handlerPaymentFailException(PaymentFailException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ExceptionResponse exceptionResponse= new ExceptionResponse(e.getMessage(),null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -48,7 +51,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(OrderValidatorException.class)
     public ResponseEntity<?> handlerOrderValidaotrException(OrderValidatorException e) {
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        ExceptionResponse exceptionResponse= new ExceptionResponse(e.getMessage(),null);
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
