@@ -5,30 +5,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * packageName    : com.flab.blackfriday.order.dto.action
- * fileName       : OrderCreateRequest
- * author         : GAMJA
- * date           : 2024/05/10
- * description    : 주문 정보 등록
+ * fileName       : OrderItemCreateRequest
+ * author         : rhkdg
+ * date           : 2024-05-11
+ * description    : 상품 옵션 정보 등록
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2024/05/10        GAMJA       최초 생성
+ * 2024-05-11        rhkdg       최초 생성
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCreateRequest {
+public class OrderItemRequest {
 
     /**상품번호*/
-    private String pNum = "";
+    private Long pitmIdx = 0L;
 
-    /**상품 옵션 정보*/
-    private List<OrderItemRequest> itemList = new ArrayList<>(); 
+    /**상품 개수*/
+    private int pCnt = 0;
+
+    /**가격*/
+    private int price = 0;
 
 }

@@ -1,6 +1,8 @@
 package com.flab.blackfriday.order.dto;
 
 import com.flab.blackfriday.order.domain.Order;
+import com.flab.blackfriday.order.dto.action.OrderCreateRequest;
+import com.flab.blackfriday.order.dto.action.OrderItemRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -68,6 +70,20 @@ public class OrderDto {
         this.price = entity.getPrice();
         this.createDate = entity.getCreateDate();
         this.modifyDate = entity.getModifyDate();
+    }
+
+    /**
+     * 주문 처리를 위한 request
+     * @param orderCreateRequest
+     * @return
+     */
+    public static OrderDto orderOf(OrderCreateRequest orderCreateRequest) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setPNum(orderCreateRequest.getPNum());
+        for(OrderItemRequest item : orderCreateRequest.getItemList()){
+            orderDto.getItemList().add(OrderItemDto.orderOf(item));
+        }
+        return orderDto;
     }
     
 }

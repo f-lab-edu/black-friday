@@ -1,15 +1,23 @@
 package com.flab.blackfriday.order.service;
 
+import com.flab.blackfriday.common.dto.ResultVO;
 import com.flab.blackfriday.order.domain.Order;
 import com.flab.blackfriday.order.dto.*;
+import com.flab.blackfriday.order.exception.OrderValidatorException;
 import com.flab.blackfriday.order.repository.OrderRepository;
+import com.flab.blackfriday.product.dto.ProductDto;
+import com.flab.blackfriday.product.dto.ProductItemDto;
+import com.flab.blackfriday.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * packageName    : com.flab.blackfriday.order.service
@@ -22,12 +30,19 @@ import java.util.List;
  * -----------------------------------------------------------
  * 2024/05/10        GAMJA       최초 생성
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class OrderService {
 
+    //주문 repository
     private final OrderRepository orderRepository;
+
+    //상품 service
+    private final ProductService productService;
+
+    private final Lock lock = new ReentrantLock();
 
     /**
      *  주문 목록 조회(페이징 o)
@@ -84,30 +99,81 @@ public class OrderService {
      * @throws Exception
      */
     @Transactional
-    public boolean insertOrder(OrderDto dto) throws Exception {
-        return orderRepository.insertOrder(dto);
+    public void insertOrder(OrderDto dto) throws Exception {
+        lock.lock();
+        try{
+            ResultVO resultVO = checkOrderValidator(dto);
+            if(resultVO.getStatusCode().equals("OK")) {
+                orderRepository.insertOrder(dto);
+            }else{
+                throw new OrderValidatorException(resultVO.getMessage());
+            }
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 상품 유효성 체크
+     * @param orderDto
+     * @return
+     * @throws Exception
+     */
+    private ResultVO checkOrderValidator(OrderDto orderDto) throws Exception{
+        
+        ProductDto productDto = new ProductDto();
+        productDto.setPNum(orderDto.getPNum());
+        productDto = productService.selectProduct(productDto);
+
+        //상품 사용여부 체크
+        if(productDto != null ){
+            if(productDto.getUseYn().equals("N")) {
+                return new ResultVO("FAIL", "중지된 상품 상품입니다.");
+            }
+        }else {
+            return new ResultVO("FAIL", "존재하지 않는 상품입니다.");
+        }
+
+        //상품 유효성 체크
+        if(!productDto.getItemList().isEmpty()){
+            for(OrderItemDto itemDto : orderDto.getItemList()) {
+                for (ProductItemDto pItemDto : productDto.getItemList()) {
+                    if (Objects.equals(itemDto.getPitmIdx(), pItemDto.getIdx())){
+                        //개수가 작을 경우
+                        if(itemDto.getPCnt() > pItemDto.getPItmCnt()){
+                            return new ResultVO("FAIL","신청하신 상품의 개수가 부족합니다.");
+                        }
+                        //상품 금액 체크
+                        if((itemDto.getPCnt()*itemDto.getPrice()) != (itemDto.getPCnt() * pItemDto.getPItmPrice())){
+                            return new ResultVO("FAIL","신청하신 상품의 개수가 부족합니다.");
+                        }
+                    }
+                }
+            }
+        }
+        return new ResultVO("OK");
     }
 
     /**
      * 주문 상태 변경
+     *
      * @param dto
-     * @return
      * @throws Exception
      */
     @Transactional
-    public boolean updateOrderStatus(OrderDto dto) throws Exception {
-        return orderRepository.updateOrderStatus(dto);
+    public void updateOrderStatus(OrderDto dto) throws Exception {
+        orderRepository.updateOrderStatus(dto);
     }
 
     /**
      * 주문 결제 상태 변경
+     *
      * @param dto
-     * @return
      * @throws Exception
      */
     @Transactional
-    public boolean updatePayStatus(OrderDto dto) throws Exception {
-        return orderRepository.updatePayStatus(dto);
+    public void updatePayStatus(OrderDto dto) throws Exception {
+        orderRepository.updatePayStatus(dto);
     }
 
 }

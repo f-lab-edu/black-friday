@@ -1,6 +1,7 @@
 package com.flab.blackfriday.order.dto;
 
 import com.flab.blackfriday.order.domain.OrderItem;
+import com.flab.blackfriday.order.dto.action.OrderItemRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -62,5 +63,18 @@ public class OrderItemDto {
         itemDto.setPCnt(response.getPCnt());
         itemDto.setPrice(response.getPrice());
         return itemDto;
+    }
+
+    /**
+     * 등록 처리
+     * @param orderItemRequest
+     * @return
+     */
+    public static OrderItemDto orderOf(OrderItemRequest orderItemRequest){
+        OrderItemDto orderItemDto = new OrderItemDto();
+        orderItemDto.setPitmIdx(orderItemDto.getPitmIdx());
+        orderItemDto.setPCnt(orderItemRequest.getPCnt());
+        orderItemDto.setPrice(orderItemDto.getPrice());
+        return orderItemDto;
     }
 }
