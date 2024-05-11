@@ -1,6 +1,7 @@
 package com.flab.blackfriday.auth.member.service;
 
 import com.flab.blackfriday.auth.member.domain.Member;
+import com.flab.blackfriday.auth.member.dto.MemberCreateRequest;
 import com.flab.blackfriday.auth.member.dto.MemberDto;
 import com.flab.blackfriday.auth.member.dto.MemberSummaryResponse;
 import com.flab.blackfriday.auth.member.repository.MemberRepository;
@@ -50,13 +51,13 @@ public class MemberService {
      * @throws Exception
      */
     @Transactional
-    public void saveMember(MemberDto dto) throws Exception {
-        Member member = memberRepository.findById(dto.getId()).orElse(null);
+    public void saveMember(MemberCreateRequest memberCreateRequest) throws Exception {
+        Member member = memberRepository.findById(memberCreateRequest.getId()).orElse(null);
         if(member != null ){
-            member.addNickname(dto.getNickname());
+            member.addNickname(memberCreateRequest.getNickname());
             memberRepository.save(member);
         }else {
-            memberRepository.save(dto.toEntity());
+            memberRepository.save(memberCreateRequest.toCreateEntity());
         }
     }
 
