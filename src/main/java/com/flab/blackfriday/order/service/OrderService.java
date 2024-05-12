@@ -5,8 +5,10 @@ import com.flab.blackfriday.order.domain.Order;
 import com.flab.blackfriday.order.dto.*;
 import com.flab.blackfriday.order.exception.OrderValidatorException;
 import com.flab.blackfriday.order.repository.OrderRepository;
+import com.flab.blackfriday.product.dto.ProductBlackFridayDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductItemDto;
+import com.flab.blackfriday.product.service.ProductBlackFridayService;
 import com.flab.blackfriday.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,9 @@ public class OrderService {
 
     //상품 service
     private final ProductService productService;
+
+    //상품 할인 정보 service
+    private final ProductBlackFridayService productBlackFridayService;
 
     private final Lock lock = new ReentrantLock();
 
@@ -103,21 +108,24 @@ public class OrderService {
     @Transactional
     public void insertOrder(OrderDto dto) throws Exception {
         lock.lock();
-        try{
+        try {
+            // 주문 관련 상품 유효성 체크
             ResultVO resultVO = checkOrderValidator(dto);
-            if(resultVO.getStatusCode().equals("OK")) {
+            if (resultVO.getStatusCode().equals("OK")) {
                 dto.setOrderStatus(OrderStatusType.NONE.name());
                 dto.setPayStatus(PayStatusType.WAIT.name());
 
-               Order order = orderRepository.save(dto.toCreateEntity());
+                //할인율 적용
+                this.orderPriceSale(dto);
+                Order order = orderRepository.save(dto.toCreateEntity());
 
                 List<ProductItemDto> itemList = (List<ProductItemDto>) resultVO.getElement();
-                for(OrderItemDto itemDto : dto.getItemList()){
+                for (OrderItemDto itemDto : dto.getItemList()) {
                     itemDto.setOIdx(order.getIdx());
                     System.out.println(itemDto.toString());
                     //주문 옵션 등록
                     orderRepository.insertOrderItem(itemDto);
-                    for(ProductItemDto productItemDto : itemList){
+                    for (ProductItemDto productItemDto : itemList) {
                         if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
                             productItemDto.minusItemCnt(itemDto.getPCnt());
                             //상품 옵션 개수 업데이트
@@ -125,10 +133,10 @@ public class OrderService {
                         }
                     }
                 }
-            }else{
+            } else {
                 throw new OrderValidatorException(resultVO.getMessage());
             }
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -154,6 +162,8 @@ public class OrderService {
             return new ResultVO("FAIL", "존재하지 않는 상품입니다.");
         }
 
+
+
         List<ProductItemDto> resultItemDto = new ArrayList<>();
 
         //상품 유효성 체크
@@ -175,6 +185,28 @@ public class OrderService {
             }
         }
         return new ResultVO("OK","정상",resultItemDto);
+    }
+
+    /**
+     * 할인율 적용
+     * @param orderDto
+     */
+    private void orderPriceSale(OrderDto orderDto) throws Exception {
+        ProductBlackFridayDto productBlackFridayDto = new ProductBlackFridayDto();
+        productBlackFridayDto.setPNum(orderDto.getPNum());
+        productBlackFridayDto.setUseYn("Y");
+        productBlackFridayDto = productBlackFridayService.selectProductBlackFriday(productBlackFridayDto);
+
+        if(productBlackFridayDto != null) {
+            if(productBlackFridayDto.getPNum().equals(orderDto.getPNum())){
+                if(productBlackFridayDto.getSale() > 0) {
+                    int price = orderDto.getPrice();
+                    price = (int) (price * ((float)(100 - productBlackFridayDto.getSale())/100));
+                    orderDto.setPrice(price);
+                }
+            }
+        }
+
     }
 
     /**
