@@ -156,14 +156,6 @@ public class OrderCustomRepositoryImpl extends BaseAbstractRepositoryImpl implem
     }
 
     @Override
-    public Object insertOrder(OrderDto dto) throws Exception {
-        String sql = "insert into orders (p_num,id,order_status_type,pay_status_type,price,create_date,modify_date)" +
-                " values ('"+dto.getPNum()+"','"+dto.getId()+"','"+OrderStatusType.valueOf(dto.getOrderStatus()).name()+"','"+PayStatusType.valueOf(dto.getPayStatus()).name()+"','"+dto.getPrice()+"',sysdate(),sysdate()) returning ID ";
-        Query q = entityManager.createNativeQuery(sql);
-        return q.getSingleResult();
-    }
-
-    @Override
     public boolean insertOrderItem(OrderItemDto itemDto) throws Exception {
         return entityManager.createNativeQuery("insert into order_item (o_idx,pitm_idx,p_cnt,price,create_date,modify_date) values (?,?,?,?,?,?)")
                 .setParameter(1,itemDto.getOIdx())

@@ -5,6 +5,7 @@ import com.flab.blackfriday.order.dto.action.OrderItemRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class OrderItemDto {
 
     /**일련번호*/
@@ -72,9 +74,9 @@ public class OrderItemDto {
      */
     public static OrderItemDto orderOf(OrderItemRequest orderItemRequest){
         OrderItemDto orderItemDto = new OrderItemDto();
-        orderItemDto.setPitmIdx(orderItemDto.getPitmIdx());
+        orderItemDto.setPitmIdx(orderItemRequest.getPitmIdx());
         orderItemDto.setPCnt(orderItemRequest.getPCnt());
-        orderItemDto.setPrice(orderItemDto.getPrice());
+        orderItemDto.setPrice(orderItemRequest.getPrice());
         return orderItemDto;
     }
 }

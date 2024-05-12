@@ -61,6 +61,10 @@ public class OrderDto {
         return Order.builder().dto(this).build();
     }
 
+    public Order toCreateEntity() {
+        return Order.builder().dto(this).build();
+    }
+
     public OrderDto (Order entity) {
         this.idx = entity.getIdx();
         this.pNum = entity.getProduct().getPNum();
@@ -80,9 +84,12 @@ public class OrderDto {
     public static OrderDto orderOf(OrderCreateRequest orderCreateRequest) {
         OrderDto orderDto = new OrderDto();
         orderDto.setPNum(orderCreateRequest.getPNum());
+        int amount = 0;
         for(OrderItemRequest item : orderCreateRequest.getItemList()){
+            amount += item.getPrice();
             orderDto.getItemList().add(OrderItemDto.orderOf(item));
         }
+        orderDto.setPrice(amount);
         return orderDto;
     }
     

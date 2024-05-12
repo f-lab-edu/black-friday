@@ -45,14 +45,6 @@ public interface OrderCustomRepository {
     List<OrderItemResponse> selectOrderItemList(OrderDto dto) throws Exception;
 
     /**
-     * 주문
-     * @param dto
-     * @return
-     * @throws Exception
-     */
-    Object insertOrder(OrderDto dto) throws Exception;
-
-    /**
      * 주문 옵션 등록
      * @param itemDto
      * @return

@@ -79,6 +79,7 @@ public class OrderService {
             if(itemList != null && !itemList.isEmpty()) {
                 orderDto.setItemList(itemList.stream().map(OrderItemDto::responseOf).toList());
             }
+            return orderDto;
         }
         return null;
     }
@@ -107,11 +108,13 @@ public class OrderService {
             if(resultVO.getStatusCode().equals("OK")) {
                 dto.setOrderStatus(OrderStatusType.NONE.name());
                 dto.setPayStatus(PayStatusType.WAIT.name());
-                long idx = (long) orderRepository.insertOrder(dto);
+
+               Order order = orderRepository.save(dto.toCreateEntity());
 
                 List<ProductItemDto> itemList = (List<ProductItemDto>) resultVO.getElement();
                 for(OrderItemDto itemDto : dto.getItemList()){
-                    itemDto.setOIdx(idx);
+                    itemDto.setOIdx(order.getIdx());
+                    System.out.println(itemDto.toString());
                     //주문 옵션 등록
                     orderRepository.insertOrderItem(itemDto);
                     for(ProductItemDto productItemDto : itemList){
