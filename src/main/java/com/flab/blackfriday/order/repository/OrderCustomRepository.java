@@ -1,6 +1,7 @@
 package com.flab.blackfriday.order.repository;
 
 import com.flab.blackfriday.order.domain.Order;
+import com.flab.blackfriday.order.domain.OrderItem;
 import com.flab.blackfriday.order.dto.*;
 import org.springframework.data.domain.Page;
 
@@ -49,7 +50,15 @@ public interface OrderCustomRepository {
      * @return
      * @throws Exception
      */
-    boolean insertOrder(OrderDto dto) throws Exception;
+    Object insertOrder(OrderDto dto) throws Exception;
+
+    /**
+     * 주문 옵션 등록
+     * @param itemDto
+     * @return
+     * @throws Exception
+     */
+    boolean insertOrderItem(OrderItemDto itemDto) throws Exception;
 
     /**
      * 주문 상태 업데이트

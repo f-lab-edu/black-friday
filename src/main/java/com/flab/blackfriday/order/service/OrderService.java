@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
@@ -104,7 +105,23 @@ public class OrderService {
         try{
             ResultVO resultVO = checkOrderValidator(dto);
             if(resultVO.getStatusCode().equals("OK")) {
-                orderRepository.insertOrder(dto);
+                dto.setOrderStatus(OrderStatusType.NONE.name());
+                dto.setPayStatus(PayStatusType.WAIT.name());
+                long idx = (long) orderRepository.insertOrder(dto);
+
+                List<ProductItemDto> itemList = (List<ProductItemDto>) resultVO.getElement();
+                for(OrderItemDto itemDto : dto.getItemList()){
+                    itemDto.setOIdx(idx);
+                    //주문 옵션 등록
+                    orderRepository.insertOrderItem(itemDto);
+                    for(ProductItemDto productItemDto : itemList){
+                        if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                            productItemDto.minusItemCnt(itemDto.getPCnt());
+                            //상품 옵션 개수 업데이트
+                            productService.updateProductItemCnt(productItemDto);
+                        }
+                    }
+                }
             }else{
                 throw new OrderValidatorException(resultVO.getMessage());
             }
@@ -120,7 +137,7 @@ public class OrderService {
      * @throws Exception
      */
     private ResultVO checkOrderValidator(OrderDto orderDto) throws Exception{
-        
+
         ProductDto productDto = new ProductDto();
         productDto.setPNum(orderDto.getPNum());
         productDto = productService.selectProduct(productDto);
@@ -133,6 +150,8 @@ public class OrderService {
         }else {
             return new ResultVO("FAIL", "존재하지 않는 상품입니다.");
         }
+
+        List<ProductItemDto> resultItemDto = new ArrayList<>();
 
         //상품 유효성 체크
         if(!productDto.getItemList().isEmpty()){
@@ -147,11 +166,12 @@ public class OrderService {
                         if((itemDto.getPCnt()*itemDto.getPrice()) != (itemDto.getPCnt() * pItemDto.getPItmPrice())){
                             return new ResultVO("FAIL","신청하신 상품의 개수가 부족합니다.");
                         }
+                        resultItemDto.add(pItemDto);
                     }
                 }
             }
         }
-        return new ResultVO("OK");
+        return new ResultVO("OK","정상",resultItemDto);
     }
 
     /**

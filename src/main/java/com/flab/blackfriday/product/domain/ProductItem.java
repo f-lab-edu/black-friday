@@ -79,20 +79,4 @@ public class ProductItem {
         this.idx = idx;
     }
 
-    /**
-     * 개수 +
-     * @param cnt
-     */
-    public void plusItemCnt(int cnt) {
-        this.pItmCnt += cnt;
-    }
-
-    /**
-     * 개수 - 처리
-     * @param cnt
-     */
-    public void minusItemCnt(int cnt) {
-        this.pItmCnt -= cnt;
-    }
-
 }

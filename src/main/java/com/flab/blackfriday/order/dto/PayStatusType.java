@@ -13,6 +13,7 @@ package com.flab.blackfriday.order.dto;
  */
 public enum PayStatusType {
 
+    WAIT("결제대기"),
     OK("결제완료"),
     CANCEL("결제취소");
     private String display = "";

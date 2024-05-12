@@ -15,10 +15,12 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -154,15 +156,22 @@ public class OrderCustomRepositoryImpl extends BaseAbstractRepositoryImpl implem
     }
 
     @Override
-    public boolean insertOrder(OrderDto dto) throws Exception {
-        return entityManager.createNativeQuery("insert into order (p_num,id,order_status,pay_status,price,create_date,modify_date) values (?,?,?,?,?,?,?)")
-                .setParameter(1, dto.getPNum())
-                .setParameter(2, dto.getId())
-                .setParameter(3, dto.getOrderStatus())
-                .setParameter(4, dto.getPayStatus())
-                .setParameter(5, dto.getPrice())
-                .setParameter(6, LocalDateTime.now())
-                .setParameter(7, LocalDateTime.now())
+    public Object insertOrder(OrderDto dto) throws Exception {
+        String sql = "insert into orders (p_num,id,order_status_type,pay_status_type,price,create_date,modify_date)" +
+                " values ('"+dto.getPNum()+"','"+dto.getId()+"','"+OrderStatusType.valueOf(dto.getOrderStatus()).name()+"','"+PayStatusType.valueOf(dto.getPayStatus()).name()+"','"+dto.getPrice()+"',sysdate(),sysdate()) returning ID ";
+        Query q = entityManager.createNativeQuery(sql);
+        return q.getSingleResult();
+    }
+
+    @Override
+    public boolean insertOrderItem(OrderItemDto itemDto) throws Exception {
+        return entityManager.createNativeQuery("insert into order_item (o_idx,pitm_idx,p_cnt,price,create_date,modify_date) values (?,?,?,?,?,?)")
+                .setParameter(1,itemDto.getOIdx())
+                .setParameter(2,itemDto.getPitmIdx())
+                .setParameter(3,itemDto.getPCnt())
+                .setParameter(4,itemDto.getPrice())
+                .setParameter(5,LocalDateTime.now())
+                .setParameter(6,LocalDateTime.now())
                 .executeUpdate() > 0;
     }
 

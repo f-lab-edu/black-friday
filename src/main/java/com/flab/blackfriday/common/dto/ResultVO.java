@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultVO {
+public class ResultVO{
 
     /**상태코드*/
     private String statusCode;

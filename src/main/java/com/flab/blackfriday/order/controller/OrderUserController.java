@@ -86,19 +86,16 @@ public class OrderUserController extends BaseModuleController {
     @PostMapping(API_URL+"/order")
     public ResponseEntity<?> insertOrder(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
 
-        try{
-            if(!memberSession.isAuthenticated()){
-                logger.error("### 인증되지 않은 접근. ### ");
-                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
-            }
-
-            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
-            orderDto.setId(memberSession.getMemberSession().getId());
-            orderService.insertOrder(orderDto);
-        }catch (Exception e) {
-            logger.error("### insert order error : {}",e.getMessage());
-            return new ResponseEntity<>("주문 요청 처리시 오류가 발생했습니다.", HttpStatus.UNPROCESSABLE_ENTITY);
+        if(!memberSession.isAuthenticated()){
+            logger.error("### 인증되지 않은 접근. ### ");
+            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
         }
+
+       System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+        OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+        orderDto.setId(memberSession.getMemberSession().getId());
+        orderService.insertOrder(orderDto);
 
         return ResponseEntity.ok().body(new ResultVO("OK","주문신청되었습니다."));
     }

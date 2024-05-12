@@ -165,33 +165,24 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
         QProduct qProduct = QProduct.product;
         QCategory qCategory = QCategory.category;
 
-        Tuple tp = (Tuple) jpaQueryFactory.select(
-                        qProduct.pNum,
-                        qProduct.pTitle,
-                        qProduct.category.categCd,
-                        qProduct.pContent,
-                        qCategory.categNm,
-                    qProduct.createDate,
-                    qProduct.modifyDate
+        return jpaQueryFactory.select(
+                    Projections.constructor(
+                            ProductDto.class,
+                            qProduct.pNum,
+                            qProduct.category.categCd,
+                            qCategory.categNm,
+                            qProduct.pTitle,
+                            qProduct.pContent,
+                            qProduct.ord,
+                            qProduct.useYn,
+                            qProduct.createDate,
+                            qProduct.modifyDate
+                    )
                 )
                 .from(qProduct)
                 .leftJoin(qCategory).on(qCategory.categCd.eq(qProduct.category.categCd)).fetchJoin()
                 .where(new BooleanBuilder().and(qProduct.pNum.eq(dto.getPNum())))
-                .fetch();
-
-        if(tp != null){
-            ProductDto productDto = new ProductDto();
-            productDto.setPNum(tp.get(qProduct.pNum));
-            productDto.setPTitle(tp.get(qProduct.pTitle));
-            productDto.setPContent(tp.get(qProduct.pContent));
-            productDto.setCategNm(tp.get(qCategory.categNm));
-            productDto.setCategCd(tp.get(qCategory.categCd));
-            productDto.setCreateDate(tp.get(qProduct.createDate));
-            productDto.setModifyDate(tp.get(qProduct.modifyDate));
-            return productDto;
-        }
-
-        return null;
+                .fetchOne();
     }
 
     @Override
@@ -205,10 +196,19 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
 
     @Override
     public ProductItemDto selectProductItem(ProductItemDto dto) throws Exception {
-        QProductItem qProductItem =QProductItem.productItem;
+        QProductItem qProductItem = QProductItem.productItem;
         ProductItem item = jpaQueryFactory.selectFrom(qProductItem)
                 .where(new BooleanBuilder().and(qProductItem.idx.eq(dto.getIdx())))
                 .fetchFirst();
         return item == null ? null : new ProductItemDto(item);
+    }
+
+    @Override
+    public boolean updateProductItemPcnt(ProductItemDto itemDto) throws Exception {
+        QProductItem qProductItem = QProductItem.productItem;
+        return jpaQueryFactory.update(qProductItem)
+                .set(qProductItem.pItmCnt,itemDto.getPItmCnt())
+                .where(new BooleanBuilder().and(qProductItem.idx.eq(itemDto.getIdx())))
+                .execute() > 0;
     }
 }

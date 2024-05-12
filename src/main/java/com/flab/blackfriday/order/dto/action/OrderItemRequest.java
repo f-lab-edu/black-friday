@@ -1,9 +1,6 @@
 package com.flab.blackfriday.order.dto.action;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * packageName    : com.flab.blackfriday.order.dto.action
@@ -20,6 +17,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class OrderItemRequest {
 
     /**상품번호*/

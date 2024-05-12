@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,18 @@ public class ProductDto {
         return Product.builder().dto(this).build();
     }
 
+    public ProductDto (String pNum, String categCd, String categNm, String pTitle,
+                       String pContent, int ord, String useYn, LocalDateTime createDate, LocalDateTime modifyDate){
+        this.pNum = pNum;
+        this.categCd = categCd;
+        this.categNm = categNm;
+        this.pTitle = pTitle;
+        this.pContent = pContent;
+        this.ord = ord;
+        this.useYn = useYn;
+        this.createDate = createDate;
+        this.modifyDate = modifyDate;
+    }
 
     public static ProductDto requestOf(ProductRequest productRequest) {
         ProductDto dto = new ProductDto();

@@ -93,6 +93,16 @@ public class ProductService {
     }
 
     /**
+     * 옵션 카운트 업데이트
+     * @param itemDto
+     * @throws Exception
+     */
+    @Transactional
+    public boolean updateProductItemCnt(ProductItemDto itemDto) throws Exception{
+        return productRepository.updateProductItemPcnt(itemDto);
+    }
+
+    /**
      * 삭제
      * @param dto
      * @throws Exception
