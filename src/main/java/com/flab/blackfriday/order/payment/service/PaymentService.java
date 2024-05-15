@@ -35,7 +35,7 @@ public class PaymentService {
 
     private final OrderService orderService;
 
-    @Value("${postman.url}")
+    @Value("${mocks_server.url}")
     private String payUrl;
 
     private final MemberSession memberSession;
@@ -49,9 +49,8 @@ public class PaymentService {
     public void payment(OrderDto orderDto) throws Exception {
 
         Map<String,Object> requestMap = new HashMap<>();
-        requestMap.put("type" , "card");
 
-        String apiUrl = payUrl+"/postman/payment/v1/pay";
+        String apiUrl = payUrl+"/mocks/pay/card/"+orderDto.getPrice();
 
         try {
             if(orderDto == null){
@@ -91,7 +90,7 @@ public class PaymentService {
 
         Map<String,Object> requestMap = new HashMap<>();
 
-        String apiUrl = payUrl+"/postman/payment/v1/cancel";
+        String apiUrl = payUrl+"/mocks/cancel/card/"+orderDto.getPrice();
 
         try{
             if(orderDto == null){
