@@ -14,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * -----------------------------------------------------------
  * 2024/05/15        GAMJA       최초 생성
  */
-public interface ProductCouponRepository extends JpaRepository<ProductCoupon,Long> {
+public interface ProductCouponRepository extends JpaRepository<ProductCoupon,Long>,ProductCouponCustomRepository {
 }

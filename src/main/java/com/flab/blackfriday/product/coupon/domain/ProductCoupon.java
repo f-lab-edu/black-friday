@@ -1,5 +1,6 @@
 package com.flab.blackfriday.product.coupon.domain;
 
+import com.flab.blackfriday.product.coupon.dto.ProductCouponDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,5 +63,34 @@ public class ProductCoupon {
 
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
+    public void addProductUpdate(ProductCouponDto dto) {
+        this.idx = dto.getIdx();
+        this.title = dto.getTitle();
+        this.remark = dto.getRemark();
+        this.startDate = dto.getStartDate();
+        this.endDate = dto.getEndDate();
+        this.categCdGroup = dto.getCategCdGroup();
+        this.productGroup = dto.getProductGroup();
+        this.couponCnt = dto.getCouponCnt();
+        this.sale = dto.getSale();
+    }
+
+    public void addProductCreate(ProductCouponDto dto) {
+        this.title = dto.getTitle();
+        this.remark = dto.getRemark();
+        this.startDate = dto.getStartDate();
+        this.endDate = dto.getEndDate();
+        this.categCdGroup = dto.getCategCdGroup();
+        this.productGroup = dto.getProductGroup();
+        this.couponCnt = dto.getCouponCnt();
+        this.sale = dto.getSale();
+    }
+
+    public static ProductCoupon createOf(ProductCouponDto dto) {
+        ProductCoupon productCoupon = new ProductCoupon();
+        productCoupon.addProductCreate(dto);
+        return productCoupon;
+    }
 
 }

@@ -1,5 +1,8 @@
 package com.flab.blackfriday.product.coupon.dto;
 
+import com.flab.blackfriday.product.coupon.domain.ProductCoupon;
+import com.flab.blackfriday.product.coupon.dto.action.ProductCouponRequest;
+import com.flab.blackfriday.product.coupon.dto.action.ProductCouponUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,5 +48,62 @@ public class ProductCouponDto {
     private LocalDateTime createDate;
 
     private LocalDateTime modifyDate;
+
+    public ProductCoupon toCreateEntity() {
+        return ProductCoupon.createOf(this);
+    }
+
+    public ProductCouponDto(ProductCoupon entity) {
+        this.idx = entity.getIdx();
+        this.title = entity.getTitle();
+        this.remark = entity.getRemark();
+        this.startDate = entity.getStartDate();
+        this.endDate = entity.getEndDate();
+        this.categCdGroup = entity.getCategCdGroup();
+        this.productGroup = entity.getProductGroup();
+        this.couponCnt = entity.getCouponCnt();
+        this.sale = entity.getSale();
+    }
+
+    /**
+     * 등록 메소드
+     * @param create
+     * @return
+     */
+    public static ProductCouponDto createOf(ProductCouponRequest create) {
+        ProductCouponDto request = new ProductCouponDto();
+        request.setTitle(create.getTitle());
+        request.setRemark(create.getRemark());
+        request.setStartDate(create.getStartDate());
+        request.setEndDate(create.getEndDate());
+        request.setCategCdGroup(create.getCategCdGroup());
+        request.setProductGroup(create.getProductGroup());
+        request.setCouponCnt(create.getCouponCnt());
+        request.setProductGroup(create.getProductGroup());
+        request.setCouponCnt(create.getCouponCnt());
+        request.setSale(create.getSale());
+        return request;
+    }
+
+    /**
+     * 수정 메소드
+     * @param update
+     * @return
+     */
+    public static ProductCouponDto updateOf(ProductCouponUpdateRequest update) {
+        ProductCouponDto request = new ProductCouponDto();
+        request.setIdx(update.getIdx());
+        request.setTitle(update.getTitle());
+        request.setRemark(update.getRemark());
+        request.setStartDate(update.getStartDate());
+        request.setEndDate(update.getEndDate());
+        request.setCategCdGroup(update.getCategCdGroup());
+        request.setProductGroup(update.getProductGroup());
+        request.setCouponCnt(update.getCouponCnt());
+        request.setProductGroup(update.getProductGroup());
+        request.setCouponCnt(update.getCouponCnt());
+        request.setSale(update.getSale());
+        return request;
+    }
 
 }
