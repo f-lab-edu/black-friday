@@ -122,7 +122,7 @@ public class OrderService {
                 List<ProductItemDto> itemList = (List<ProductItemDto>) resultVO.getElement();
                 for (OrderItemDto itemDto : dto.getItemList()) {
                     itemDto.setOIdx(order.getIdx());
-                    System.out.println(itemDto.toString());
+                    System.out.println("### itemDto toString : "+itemDto.toString());
                     //주문 옵션 등록
                     orderRepository.insertOrderItem(itemDto);
                     for (ProductItemDto productItemDto : itemList) {

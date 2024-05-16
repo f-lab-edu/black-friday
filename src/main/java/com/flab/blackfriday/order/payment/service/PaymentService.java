@@ -50,7 +50,7 @@ public class PaymentService {
 
         Map<String,Object> requestMap = new HashMap<>();
 
-        String apiUrl = payUrl+"/mocks/pay/card/"+orderDto.getPrice();
+        String apiUrl = "/mocks/pay/card/"+orderDto.getPrice();
 
         try {
             if(orderDto == null){
@@ -59,11 +59,14 @@ public class PaymentService {
             if (!orderDto.getId().equals(memberSession.getMemberSession().getId())) {
                 throw new PaymentFailException("회원정보가 일치하지 않습니다.");
             }
+
+            System.out.println("payment url : "+payUrl+apiUrl);
             //결제 정보 response
-            PaymentResponse paymentResponse = PaymentWebClientUtil.sendPayment(apiUrl,requestMap);
+            PaymentResponse paymentResponse = PaymentWebClientUtil.sendPayment(payUrl,apiUrl);
+            System.out.println(paymentResponse.getResult().get("msg"));
 
             assert paymentResponse != null;
-            if(paymentResponse.getStatus().equals("200")){
+            if(paymentResponse.getResult().get("status").equals("200")){
                 orderDto.setOrderStatus(OrderStatusType.OK.name());
                 orderDto.setPayStatus(PayStatusType.OK.name());
                 //주문 상태 변경
@@ -71,8 +74,8 @@ public class PaymentService {
                 //결제 상태 변경
                 orderService.updatePayStatus(orderDto);
             //결제 실패할 경우
-            }else if(paymentResponse.getStatus().equals("00")){
-                throw new PaymentFailException(paymentResponse.getText());
+            }else if(paymentResponse.getResult().get("status").equals("00")){
+                throw new PaymentFailException((String) paymentResponse.getResult().get("msg"));
             }
         }catch (Exception e) {
             throw new PaymentFailException(e.getMessage());
@@ -90,7 +93,7 @@ public class PaymentService {
 
         Map<String,Object> requestMap = new HashMap<>();
 
-        String apiUrl = payUrl+"/mocks/cancel/card/"+orderDto.getPrice();
+        String apiUrl = "/mocks/cancel/card/"+orderDto.getPrice();
 
         try{
             if(orderDto == null){
@@ -99,19 +102,23 @@ public class PaymentService {
             if (!orderDto.getId().equals(memberSession.getMemberSession().getId())) {
                 throw new PaymentFailException("회원정보가 일치하지 않습니다.");
             }
+
+            System.out.println("payment url : "+payUrl+apiUrl);
+
             //결제 정보 response
-            PaymentResponse paymentResponse = PaymentWebClientUtil.sendPayment(apiUrl,requestMap);
+            PaymentResponse paymentResponse = PaymentWebClientUtil.sendPayment(payUrl,apiUrl);
+            System.out.println(paymentResponse.getResult().get("msg"));
 
             assert paymentResponse != null;
-            if(paymentResponse.getStatus().equals("200")){
+            if(paymentResponse.getResult().get("status").equals("200")){
                 orderDto.setOrderStatus(OrderStatusType.CANCEL.name());
                 orderDto.setPayStatus(PayStatusType.CANCEL.name());
                 //주문 상태 변경
                 orderService.updateOrderStatus(orderDto);
                 //결제 상태 변경
                 orderService.updatePayStatus(orderDto);
-            }else if(paymentResponse.getStatus().equals("00")){
-                throw new PaymentFailException(paymentResponse.getText());
+            }else if(paymentResponse.getResult().get("status").equals("00")){
+                throw new PaymentFailException((String) paymentResponse.getResult().get("msg"));
             }
         }catch (Exception e){
             throw new PaymentFailException(e.getMessage());

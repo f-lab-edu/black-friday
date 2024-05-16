@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 /**
  * packageName    : com.flab.blackfriday.order.payment.dto
  * fileName       : PaymentResponse
@@ -22,9 +24,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PaymentResponse {
 
-    private String status = "";
+    private int amount = 0;
 
-    private String payType = "";
+    private Map<String,Object> result;
 
-    private String text = "";
 }

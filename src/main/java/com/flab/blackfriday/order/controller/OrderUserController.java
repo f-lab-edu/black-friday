@@ -131,20 +131,17 @@ public class OrderUserController extends BaseModuleController {
      */
     @PutMapping(API_URL+"/order/cancel")
     public ResponseEntity<?> orderCancelPayment(@RequestParam("idx") long idx) throws Exception {
-        try{
-            if(!memberSession.isAuthenticated()){
-                logger.error("### 인증되지 않은 접근. ### ");
-                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
-            }
-            
-            OrderDto orderDto = new OrderDto();
-            orderDto.setIdx(idx);
-            orderDto = orderService.selectOrder(orderDto);
-            paymentService.cancel(orderDto);
-        }catch (Exception e) {
-            logger.error("### order pay cancel error : {}",e.getMessage());
-            return new ResponseEntity<>("결제 취소 처리시 오류가 발생했습니다.", HttpStatus.UNPROCESSABLE_ENTITY);
+
+        if(!memberSession.isAuthenticated()){
+            logger.error("### 인증되지 않은 접근. ### ");
+            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
         }
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setIdx(idx);
+        orderDto = orderService.selectOrder(orderDto);
+        paymentService.cancel(orderDto);
+
         return ResponseEntity.ok().body(new ResultVO("OK","취소되었습니다."));
     }
 }

@@ -30,6 +30,12 @@ public class PaymentWebClientUtil {
         return postWebclient(webClient,requestMap);
     }
 
+    public static PaymentResponse sendPayment(String apiUrl, String uri) {
+        //결제 외부 api 호출
+        WebClient webClient = WebClient.builder().baseUrl(apiUrl).build();
+        return postWebclientUri(webClient,uri);
+    }
+
     /**
      * 외부 api response 결과
      * @param webClient
@@ -38,6 +44,12 @@ public class PaymentWebClientUtil {
      */
     public static PaymentResponse postWebclient(WebClient webClient, Map<String,Object> requestMap) {
         return webClient.post().bodyValue(requestMap)
+                .retrieve().bodyToMono(PaymentResponse.class)
+                .block();
+    }
+
+    public static PaymentResponse postWebclientUri(WebClient webClient,String uri) {
+        return webClient.post().uri(uri)
                 .retrieve().bodyToMono(PaymentResponse.class)
                 .block();
     }
