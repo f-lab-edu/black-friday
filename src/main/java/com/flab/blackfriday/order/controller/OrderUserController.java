@@ -118,7 +118,11 @@ public class OrderUserController extends BaseModuleController {
         orderDto.setIdx(idx);
         orderDto = orderService.selectOrder(orderDto);
 
-        paymentService.payment(orderDto);
+        if(orderDto != null){
+            paymentService.payment(orderDto);
+        }else {
+            throw new NoExistAuthException("주문 정보가 존재하지 않습니다.",HttpStatus.UNAUTHORIZED.name());
+        }
 
         return ResponseEntity.ok().body(new ResultVO("OK","결제되었습니다."));
     }
@@ -140,7 +144,12 @@ public class OrderUserController extends BaseModuleController {
         OrderDto orderDto = new OrderDto();
         orderDto.setIdx(idx);
         orderDto = orderService.selectOrder(orderDto);
-        paymentService.cancel(orderDto);
+
+        if(orderDto != null){
+            paymentService.cancel(orderDto);
+        }else {
+            throw new NoExistAuthException("주문 정보가 존재하지 않습니다.",HttpStatus.UNAUTHORIZED.name());
+        }
 
         return ResponseEntity.ok().body(new ResultVO("OK","취소되었습니다."));
     }
