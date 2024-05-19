@@ -100,15 +100,17 @@ public class MemberUserController extends BaseModuleController {
         prevDto = memberService.selectMember(prevDto);
 
         if(prevDto == null){
-            return new ResponseEntity<>(new CommonResponse("아이디 또는 비밀번호가 일치하지 않습니다.",null), HttpStatus.UNAUTHORIZED);
+            modelMap.put("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            return new ResponseEntity<>(modelMap, HttpStatus.UNAUTHORIZED);
         }
 
         if(!PasswordEncoderTypeHandler.matches(password,prevDto.getPassword())){
-            return new ResponseEntity<>(new CommonResponse("아이디 또는 비밀번호가 일치하지 않습니다.",null), HttpStatus.UNAUTHORIZED);
+            modelMap.put("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
+            return new ResponseEntity<>(modelMap, HttpStatus.UNAUTHORIZED);
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("token",memberSession.createToken(prevDto));
+        headers.set(HttpHeaders.AUTHORIZATION,memberSession.createToken(prevDto));
         return ResponseEntity.ok().headers(headers).body(new CommonResponse("로그인에 성공하였습니다.",null));
     }
 

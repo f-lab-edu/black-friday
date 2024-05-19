@@ -16,6 +16,7 @@ import lombok.Setter;
  */
 public enum OrderStatusType {
 
+    NONE("주문접수"),
     OK("구매완료"),
     CANCEL("구매취소");
 

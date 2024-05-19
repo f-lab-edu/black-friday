@@ -41,6 +41,13 @@ public class ProductSummaryResponse {
         this.sale = sale;
     }
 
+    public ProductSummaryResponse(String pNum, String pTitle, String categCd, String categNm){
+        this.pNum = pNum;
+        this.pTitle = pTitle;
+        this.categCd = categCd;
+        this.categNm = categNm;
+    }
+
     public static ProductSummaryResponse fromDto(ProductDto dto){
         ProductSummaryResponse response = new ProductSummaryResponse();
         response.setPNum(dto.getPNum());

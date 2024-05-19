@@ -91,10 +91,21 @@ public class ProductCustomBlackFridayRepositoryImpl extends BaseAbstractReposito
         QProductBlackFriday qProductBlackFriday = QProductBlackFriday.productBlackFriday;
         QProduct qProduct  = QProduct.product;
 
+        BooleanBuilder sql = new BooleanBuilder();
+        if(dto.getIdx() > 0){
+            sql.and(qProductBlackFriday.idx.eq(dto.getIdx()));
+        }
+        if(dto.getUseYn() != null && !dto.getUseYn().isEmpty()) {
+            sql.and(qProductBlackFriday.useYn.eq(dto.getUseYn()));
+        }
+        if(dto.getPNum() != null && !dto.getPNum().isEmpty()){
+            sql.and(qProductBlackFriday.product.pNum.eq(dto.getPNum()));
+        }
+
         ProductBlackFriday productBlackFriday = jpaQueryFactory.selectFrom(qProductBlackFriday)
                 .leftJoin(qProduct).on(qProductBlackFriday.product.pNum.eq(qProduct.pNum))
                 .fetchJoin()
-                .where(new BooleanBuilder().and(qProductBlackFriday.idx.eq(dto.getIdx())))
+                .where(sql)
                 .fetchFirst();
 
         return productBlackFriday == null ? null : new ProductBlackFridayDto(productBlackFriday);

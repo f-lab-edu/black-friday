@@ -1,11 +1,15 @@
 package com.flab.blackfriday.order.dto;
 
 import com.flab.blackfriday.order.domain.Order;
+import com.flab.blackfriday.order.dto.action.OrderCreateRequest;
+import com.flab.blackfriday.order.dto.action.OrderItemRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packageName    : com.flab.blackfriday.order.dto
@@ -47,12 +51,46 @@ public class OrderDto {
     /**수정일자*/
     private LocalDateTime modifyDate;
 
+    private List<OrderItemDto> itemList = new ArrayList<>();
+
     /**
      * dto -> entity
      * @return
      */
     public Order toEntity(){
         return Order.builder().dto(this).build();
+    }
+
+    public Order toCreateEntity() {
+        return Order.builder().dto(this).build();
+    }
+
+    public OrderDto (Order entity) {
+        this.idx = entity.getIdx();
+        this.pNum = entity.getProduct().getPNum();
+        this.id = entity.getMember().getId();
+        this.orderStatus = entity.getOrderStatusType().name();
+        this.payStatus = entity.getPayStatusType().name();
+        this.price = entity.getPrice();
+        this.createDate = entity.getCreateDate();
+        this.modifyDate = entity.getModifyDate();
+    }
+
+    /**
+     * 주문 처리를 위한 request
+     * @param orderCreateRequest
+     * @return
+     */
+    public static OrderDto orderOf(OrderCreateRequest orderCreateRequest) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setPNum(orderCreateRequest.getPNum());
+        int amount = 0;
+        for(OrderItemRequest item : orderCreateRequest.getItemList()){
+            amount += item.getPrice();
+            orderDto.getItemList().add(OrderItemDto.orderOf(item));
+        }
+        orderDto.setPrice(amount);
+        return orderDto;
     }
     
 }

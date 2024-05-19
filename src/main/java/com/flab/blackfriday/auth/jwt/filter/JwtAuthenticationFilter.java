@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -35,6 +36,7 @@ import java.io.IOException;
  * -----------------------------------------------------------
  * 2024-05-01        rhkdg       최초 생성
  */
+@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -46,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtProvider.resolveToken(request);
         String requestURI = request.getRequestURI();
+        logger.debug("### 인증 체크 ###");
         JwtValidateResult<Claims> result = jwtProvider.getValidateToken(token);
         if(StringUtils.hasText(token) && JwtValidateType.TOKEN_OK.name().equals(result.getJwtValidateType().name())){
             try{

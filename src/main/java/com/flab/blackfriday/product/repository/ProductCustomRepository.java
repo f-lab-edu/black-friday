@@ -69,4 +69,12 @@ public interface ProductCustomRepository {
      * @throws Exception
      */
     ProductItemDto selectProductItem(ProductItemDto dto) throws Exception;
+
+    /**
+     * 상품 옵션 정보 업데이트
+     * @param itemDto
+     * @return
+     * @throws Exception
+     */
+    boolean updateProductItemPcnt(ProductItemDto itemDto) throws Exception;
 }

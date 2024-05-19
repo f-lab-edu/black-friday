@@ -65,5 +65,20 @@ public class ProductItemDto {
         this.createDate = entity.getCreateDate();
         this.modifyDate = entity.getModifyDate();
     }
-    
+
+    /**
+     * 개수 +
+     * @param cnt
+     */
+    public void plusItemCnt(int cnt) {
+        this.pItmCnt += cnt;
+    }
+
+    /**
+     * 개수 - 처리
+     * @param cnt
+     */
+    public void minusItemCnt(int cnt) {
+        this.pItmCnt -= cnt;
+    }
 }

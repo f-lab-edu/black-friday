@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
  * 2024-04-17        rhkdg       최초 생성
  */
 @Entity
-@Table(name="order")
+@Table(name="orders")
 @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)

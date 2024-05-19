@@ -1,9 +1,11 @@
 package com.flab.blackfriday.order.dto;
 
 import com.flab.blackfriday.order.domain.OrderItem;
+import com.flab.blackfriday.order.dto.action.OrderItemRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class OrderItemDto {
 
     /**일련번호*/
@@ -46,13 +49,34 @@ public class OrderItemDto {
     /**수정일자*/
     private LocalDateTime modifyDate;
 
-    private List<OrderItemDto> itemList = new ArrayList<>();
-
     /**
      * dto -> entity
      * @return
      */
     public OrderItem toEntity() {
         return OrderItem.builder().dto(this).build();
+    }
+
+    public static OrderItemDto responseOf(OrderItemResponse response){
+        OrderItemDto itemDto = new OrderItemDto();
+        itemDto.setIdx(response.getIdx());
+        itemDto.setOIdx(response.getOIdx());
+        itemDto.setPitmIdx(response.getProductItemSummaryResponse().getIdx());
+        itemDto.setPCnt(response.getPCnt());
+        itemDto.setPrice(response.getPrice());
+        return itemDto;
+    }
+
+    /**
+     * 등록 처리
+     * @param orderItemRequest
+     * @return
+     */
+    public static OrderItemDto orderOf(OrderItemRequest orderItemRequest){
+        OrderItemDto orderItemDto = new OrderItemDto();
+        orderItemDto.setPitmIdx(orderItemRequest.getPitmIdx());
+        orderItemDto.setPCnt(orderItemRequest.getPCnt());
+        orderItemDto.setPrice(orderItemRequest.getPrice());
+        return orderItemDto;
     }
 }
