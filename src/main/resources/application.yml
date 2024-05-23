@@ -2,7 +2,8 @@ spring:
   profiles:
     group:
       local : local, common
-    active: local
+      dev : dev ,common
+#    active: local
 
 ---
 spring:
@@ -21,6 +22,27 @@ spring:
        min-idle: 8
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+mocks_server:
+        url: http://localhost:3100
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:mysql://host.docker.internal:33306/blackfriday_dev?serverTimezone=UTC&characterEncoding=UTF-8
+    username: blackfriday
+    password: blackfriday
+    tomcat:
+      initial-size: 20
+      max-idle: 15
+      min-idle: 8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mocks_server:
+         url: http://host.docker.internal:3200
 
 ---
 spring:
@@ -50,5 +72,3 @@ jwt:
 
 #postman:
 #      url: https://3d916b8e-9f29-4eaa-874f-f6eeb9759c95.mock.pstmn.io
-mocks_server:
-          url: http://localhost:3100
