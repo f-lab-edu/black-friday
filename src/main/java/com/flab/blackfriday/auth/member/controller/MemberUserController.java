@@ -1,10 +1,7 @@
 package com.flab.blackfriday.auth.member.controller;
 
 import com.flab.blackfriday.auth.jwt.JwtProvider;
-import com.flab.blackfriday.auth.member.dto.MemberCreateRequest;
-import com.flab.blackfriday.auth.member.dto.MemberDto;
-import com.flab.blackfriday.auth.member.dto.MemberSession;
-import com.flab.blackfriday.auth.member.dto.MemberSummaryResponse;
+import com.flab.blackfriday.auth.member.dto.*;
 import com.flab.blackfriday.auth.member.service.MemberService;
 import com.flab.blackfriday.common.controller.BaseModuleController;
 import com.flab.blackfriday.common.exception.NoExistAuthException;
@@ -86,17 +83,14 @@ public class MemberUserController extends BaseModuleController {
 
     /**
      * 로그인
-     * @param id
-     * @param password
+     * @Param memberLoginRequest
      * @return
      * @throws Exception
      */
     @PostMapping(API_URL+"/member/login")
-    public ResponseEntity<?> login(@RequestParam("id") String id,
-                                   @RequestParam("password") String password) throws Exception {
+    public ResponseEntity<?> login(@RequestBody MemberLoginRequest memberLoginRequest) throws Exception {
 
-        MemberDto prevDto = new MemberDto();
-        prevDto.setId(id);
+        MemberDto prevDto = MemberDto.loginOf(memberLoginRequest);
         prevDto = memberService.selectMember(prevDto);
 
         if(prevDto == null){
@@ -104,7 +98,7 @@ public class MemberUserController extends BaseModuleController {
             return new ResponseEntity<>(modelMap, HttpStatus.UNAUTHORIZED);
         }
 
-        if(!PasswordEncoderTypeHandler.matches(password,prevDto.getPassword())){
+        if(!PasswordEncoderTypeHandler.matches(memberLoginRequest.getPassword(),prevDto.getPassword())){
             modelMap.put("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
             return new ResponseEntity<>(modelMap, HttpStatus.UNAUTHORIZED);
         }

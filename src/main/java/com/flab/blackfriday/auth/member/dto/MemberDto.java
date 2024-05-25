@@ -65,4 +65,11 @@ public class MemberDto {
         return dto;
     }
 
+    public static MemberDto loginOf(MemberLoginRequest memberLoginRequest) {
+        MemberDto dto = new MemberDto();
+        dto.setId(memberLoginRequest.getId());
+        dto.setPassword(memberLoginRequest.getPassword());
+        return dto;
+    }
+
 }
