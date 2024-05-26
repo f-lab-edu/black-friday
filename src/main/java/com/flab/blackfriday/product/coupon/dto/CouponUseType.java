@@ -4,25 +4,24 @@ import lombok.Getter;
 
 /**
  * packageName    : com.flab.blackfriday.product.coupon.dto
- * fileName       : CouponUseStatus
+ * fileName       : CouponCreateType
  * author         : GAMJA
- * date           : 2024/05/15
- * description    : 쿠폰 사용 상태 enum
+ * date           : 2024/05/26
+ * description    : 쿠폰 전달 방식 (바로 생성 하는 것이냐, 회원이 등록하여 사용하냐의 차이)
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2024/05/15        GAMJA       최초 생성
+ * 2024/05/26        GAMJA       최초 생성
  */
 @Getter
-public enum CouponUseStatus {
+public enum CouponUseType {
 
-    NONE("미사용"),
-    STOP("주이"),
-    OK("사용");
+    NOW("바로적용"),
+    SLOW("회원적용");
 
     private String display = "";
 
-    CouponUseStatus(String display) {
+    CouponUseType(String display){
         this.display = display;
     }
 }

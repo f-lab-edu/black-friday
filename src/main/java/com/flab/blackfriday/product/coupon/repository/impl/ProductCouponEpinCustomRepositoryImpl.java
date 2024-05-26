@@ -1,12 +1,20 @@
 package com.flab.blackfriday.product.coupon.repository.impl;
 
 import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
+import com.flab.blackfriday.product.coupon.domain.QProductCoupon;
+import com.flab.blackfriday.product.coupon.domain.QProductCouponEpin;
 import com.flab.blackfriday.product.coupon.dto.ProductCouponDefaultDto;
 import com.flab.blackfriday.product.coupon.dto.ProductCouponEpinDto;
+import com.flab.blackfriday.product.coupon.dto.ProductCouponEpinWithInfoResponse;
 import com.flab.blackfriday.product.coupon.repository.ProductCouponEpinCustomRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -21,23 +29,86 @@ import java.util.List;
  * -----------------------------------------------------------
  * 2024/05/16        GAMJA       최초 생성
  */
+@Repository
 public class ProductCouponEpinCustomRepositoryImpl extends BaseAbstractRepositoryImpl implements ProductCouponEpinCustomRepository {
     protected ProductCouponEpinCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
         super(entityManager, jpaQueryFactory);
     }
 
-    @Override
-    public Page<ProductCouponEpinDto> selectProductCouponEpinPageList(ProductCouponDefaultDto searchDto) throws Exception {
-        return null;
+    private BooleanBuilder commonQuery(ProductCouponDefaultDto searchDto) throws Exception {
+        BooleanBuilder sql = new BooleanBuilder();
+        QProductCouponEpin qProductCouponEpin = QProductCouponEpin.productCouponEpin;
+        if(!StringUtils.isBlank(searchDto.getMemberId())){
+            sql.and(qProductCouponEpin.member.id.eq(searchDto.getMemberId()));
+        }
+        if(searchDto.getProductCouponIdx() > 0) {
+            sql.and(qProductCouponEpin.productCoupon.idx.eq(searchDto.getProductCouponIdx()));
+        }
+        return sql;
     }
 
     @Override
-    public List<ProductCouponEpinDto> selectProductCouponEpinList(ProductCouponDefaultDto searchDto) throws Exception {
-        return null;
+    public Page<ProductCouponEpinWithInfoResponse> selectProductCouponEpinPageList(ProductCouponDefaultDto searchDto) throws Exception {
+        QProductCouponEpin qProductCouponEpin = QProductCouponEpin.productCouponEpin;
+        QProductCoupon qProductCoupon = QProductCoupon.productCoupon;
+
+        long totCnt = jpaQueryFactory.select(qProductCouponEpin.count())
+                .from(qProductCouponEpin)
+                .innerJoin(qProductCoupon).on(qProductCouponEpin.productCoupon.idx.eq(qProductCoupon.idx))
+                .fetchJoin()
+                .where(commonQuery(searchDto))
+                .fetchFirst();
+
+        List<ProductCouponEpinWithInfoResponse> list = jpaQueryFactory.select(
+                                        Projections.constructor(
+                                                ProductCouponEpinWithInfoResponse.class,
+                                                qProductCouponEpin.couponNum,
+                                                qProductCouponEpin.member.id,
+                                                qProductCoupon.idx,
+                                                qProductCoupon.title,
+                                                qProductCoupon.startDate,
+                                                qProductCoupon.endDate
+                                        )
+                                ).from(qProductCouponEpin)
+                                .innerJoin(qProductCoupon).on(qProductCouponEpin.productCoupon.idx.eq(qProductCoupon.idx))
+                                .fetchJoin()
+                .where(commonQuery(searchDto))
+                .offset(searchDto.getPageable().getOffset())
+                .limit(searchDto.getPageable().getPageSize())
+                .fetch();
+
+        return new PageImpl<>(list,searchDto.getPageable(),totCnt);
     }
 
     @Override
-    public ProductCouponEpinDto selectProductCouponEpin(ProductCouponEpinDto dto) throws Exception {
-        return null;
+    public List<ProductCouponEpinWithInfoResponse> selectProductCouponEpinList(ProductCouponDefaultDto searchDto) throws Exception {
+        QProductCouponEpin qProductCouponEpin = QProductCouponEpin.productCouponEpin;
+        QProductCoupon qProductCoupon = QProductCoupon.productCoupon;
+        return jpaQueryFactory.select(
+                        Projections.constructor(
+                                ProductCouponEpinWithInfoResponse.class,
+                                qProductCouponEpin.couponNum,
+                                qProductCouponEpin.member.id,
+                                qProductCoupon.idx,
+                                qProductCoupon.title,
+                                qProductCoupon.startDate,
+                                qProductCoupon.endDate
+                        )
+                ).from(qProductCouponEpin)
+                .innerJoin(qProductCoupon).on(qProductCouponEpin.productCoupon.idx.eq(qProductCoupon.idx))
+                .fetchJoin()
+                .where(commonQuery(searchDto))
+                .offset(searchDto.getPageable().getOffset())
+                .limit(searchDto.getPageable().getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public long selectProductCouponEpinExistCnt(String couponNum) throws Exception {
+        QProductCouponEpin qProductCouponEpin = QProductCouponEpin.productCouponEpin;
+        return jpaQueryFactory.select(qProductCouponEpin.count())
+                .from(qProductCouponEpin)
+                .where(new BooleanBuilder().and(qProductCouponEpin.couponNum.eq(couponNum)))
+                .fetchFirst();
     }
 }

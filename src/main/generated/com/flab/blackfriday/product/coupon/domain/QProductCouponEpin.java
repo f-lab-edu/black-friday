@@ -34,6 +34,8 @@ public class QProductCouponEpin extends EntityPathBase<ProductCouponEpin> {
 
     public final EnumPath<com.flab.blackfriday.product.coupon.dto.CouponUseStatus> useStatus = createEnum("useStatus", com.flab.blackfriday.product.coupon.dto.CouponUseStatus.class);
 
+    public final EnumPath<com.flab.blackfriday.product.coupon.dto.CouponUseType> useType = createEnum("useType", com.flab.blackfriday.product.coupon.dto.CouponUseType.class);
+
     public QProductCouponEpin(String variable) {
         this(ProductCouponEpin.class, forVariable(variable), INITS);
     }

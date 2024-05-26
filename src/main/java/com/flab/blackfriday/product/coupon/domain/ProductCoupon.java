@@ -93,4 +93,8 @@ public class ProductCoupon {
         return productCoupon;
     }
 
+    public void addIdx(long idx) {
+        this.idx = idx;
+    }
+
 }

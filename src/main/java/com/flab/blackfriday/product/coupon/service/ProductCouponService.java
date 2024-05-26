@@ -1,16 +1,20 @@
 package com.flab.blackfriday.product.coupon.service;
 
 import com.flab.blackfriday.product.coupon.domain.ProductCoupon;
-import com.flab.blackfriday.product.coupon.dto.ProductCouponDefaultDto;
-import com.flab.blackfriday.product.coupon.dto.ProductCouponDto;
-import com.flab.blackfriday.product.coupon.dto.ProductCouponSummaryResponse;
+import com.flab.blackfriday.product.coupon.domain.ProductCouponEpin;
+import com.flab.blackfriday.product.coupon.dto.*;
+import com.flab.blackfriday.product.coupon.repository.ProductCouponEpinRepository;
 import com.flab.blackfriday.product.coupon.repository.ProductCouponRepository;
+import com.flab.blackfriday.product.coupon.util.CouponRandomUtil;
+import com.flab.blackfriday.product.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * packageName    : com.flab.blackfriday.product.coupon.service
@@ -29,6 +33,10 @@ import java.util.List;
 public class ProductCouponService {
 
     private final ProductCouponRepository productCouponRepository;
+
+    private final ProductCouponEpinRepository productCouponEpinRepository;
+
+    private final Lock lock = new ReentrantLock();
 
     /**
      * 쿠폰 페이지 목록 (페이징 o )
@@ -88,6 +96,76 @@ public class ProductCouponService {
     @Transactional
     public void deleteProductCoupon(ProductCouponDto dto) throws Exception {
         productCouponRepository.deleteById(dto.getIdx());
+    }
+
+    /**
+     * 쿠폰 목록 조회(페이징)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    public Page<ProductCouponEpinWithInfoResponse> selectProductCouponEpinPageList(ProductCouponDefaultDto searchDto) throws Exception {
+        return productCouponEpinRepository.selectProductCouponEpinPageList(searchDto);
+    }
+
+    /**
+     * 쿠폰 목록 조회 (페이징 x)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    public List<ProductCouponEpinWithInfoResponse> selectProductCouponEpinList(ProductCouponDefaultDto searchDto) throws Exception {
+        return productCouponEpinRepository.selectProductCouponEpinList(searchDto);
+    }
+
+    /**
+     * 쿠폰 정보 조회
+     * @param epinDto
+     * @return
+     * @throws Exception
+     */
+    public ProductCouponEpinDto selectProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
+        ProductCouponEpin productCouponEpin = productCouponEpinRepository.findById(epinDto.getId()).orElse(null);
+        if(productCouponEpin == null) {
+            return null;
+        }
+        return new ProductCouponEpinDto(productCouponEpin);
+    }
+
+    /**
+     * 쿠폰 생성
+     * @param epinDto
+     * @throws Exception
+     */
+    @Transactional
+    public void insertProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
+        lock.lock();
+        try {
+            String couponNum = "";
+
+            //쿠폰생성
+            while (true) {
+                couponNum = CouponRandomUtil.randomMix(10);
+                ProductCouponEpin existCheck = productCouponEpinRepository.findById(couponNum).orElse(null);
+                if (existCheck == null)
+                    break;
+            }
+
+            epinDto.setCouponNum(couponNum);
+            productCouponEpinRepository.save(epinDto.toEntity());
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 쿠폰 수정
+     * @param epinDto
+     * @throws Exception
+     */
+    @Transactional
+    public void updateProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
+        productCouponEpinRepository.findById(epinDto.getCouponNum()).ifPresent(productCouponEpin -> productCouponEpin.addUpdateEpin(epinDto));
     }
 
 }
