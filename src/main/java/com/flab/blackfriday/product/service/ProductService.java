@@ -51,6 +51,16 @@ public class ProductService {
     }
 
     /**
+     * 블랙 프라이데이 임시 목록 조회
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    public List<ProductTempResponse> selectProductPageWithItemTempList(ProductDefaultDto searchDto) throws Exception {
+        return productRepository.selectProductPageWithItemTempList(searchDto);
+    }
+
+    /**
      * 목록 조회(페이징 x)
      * @param searchDto
      * @return
