@@ -30,7 +30,7 @@ public class QProductCouponEpin extends EntityPathBase<ProductCouponEpin> {
 
     public final DateTimePath<java.time.LocalDateTime> modifyDate = createDateTime("modifyDate", java.time.LocalDateTime.class);
 
-    public final QProductCoupon productCoupon;
+    public final QProductCouponConfig productCouponConfig;
 
     public final EnumPath<com.flab.blackfriday.product.coupon.dto.CouponUseStatus> useStatus = createEnum("useStatus", com.flab.blackfriday.product.coupon.dto.CouponUseStatus.class);
 
@@ -55,7 +55,7 @@ public class QProductCouponEpin extends EntityPathBase<ProductCouponEpin> {
     public QProductCouponEpin(Class<? extends ProductCouponEpin> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.flab.blackfriday.auth.member.domain.QMember(forProperty("member")) : null;
-        this.productCoupon = inits.isInitialized("productCoupon") ? new QProductCoupon(forProperty("productCoupon")) : null;
+        this.productCouponConfig = inits.isInitialized("productCouponConfig") ? new QProductCouponConfig(forProperty("productCouponConfig")) : null;
     }
 
 }

@@ -48,7 +48,7 @@ public class ProductCouponEpinDto {
 
     public ProductCouponEpinDto(ProductCouponEpin entity){
         this.couponNum = entity.getCouponNum();
-        this.idx = entity.getProductCoupon().getIdx();
+        this.idx = entity.getProductCouponConfig().getIdx();
         this.id = entity.getMember().getId();
         this.useType = entity.getUseType().name();
         this.useStatus = entity.getUseStatus().name();

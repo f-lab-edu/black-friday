@@ -1,13 +1,12 @@
 package com.flab.blackfriday.product.coupon.repository.impl;
 
 import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
-import com.flab.blackfriday.product.coupon.domain.ProductCoupon;
-import com.flab.blackfriday.product.coupon.domain.QProductCoupon;
+import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
+import com.flab.blackfriday.product.coupon.domain.QProductCouponConfig;
 import com.flab.blackfriday.product.coupon.dto.ProductCouponDefaultDto;
 import com.flab.blackfriday.product.coupon.dto.ProductCouponDto;
 import com.flab.blackfriday.product.coupon.dto.ProductCouponSummaryResponse;
 import com.flab.blackfriday.product.coupon.repository.ProductCouponCustomRepository;
-import com.flab.blackfriday.product.dto.ProductSummaryResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -36,7 +35,7 @@ public class ProductCouponCustomRepositoryImpl extends BaseAbstractRepositoryImp
     }
 
     private BooleanBuilder commonQuery(ProductCouponDefaultDto searchDto) throws Exception {
-        QProductCoupon qProductCoupon = QProductCoupon.productCoupon;
+        QProductCouponConfig qProductCoupon = QProductCouponConfig.productCouponConfig;
         BooleanBuilder sql = new BooleanBuilder();
         if(searchDto.getSstring() != null && !searchDto.getSstring().isEmpty()){
 
@@ -46,7 +45,7 @@ public class ProductCouponCustomRepositoryImpl extends BaseAbstractRepositoryImp
 
     @Override
     public Page<ProductCouponSummaryResponse> selectProductCouponPageList(ProductCouponDefaultDto searchDto) throws Exception {
-        QProductCoupon qProductCoupon = QProductCoupon.productCoupon;
+        QProductCouponConfig qProductCoupon = QProductCouponConfig.productCouponConfig;
 
         long totCnt = jpaQueryFactory.select(qProductCoupon.count())
                 .from(qProductCoupon)
@@ -73,7 +72,7 @@ public class ProductCouponCustomRepositoryImpl extends BaseAbstractRepositoryImp
 
     @Override
     public List<ProductCouponSummaryResponse> selectProductCouponList(ProductCouponDefaultDto searchDto) throws Exception {
-        QProductCoupon qProductCoupon = QProductCoupon.productCoupon;
+        QProductCouponConfig qProductCoupon = QProductCouponConfig.productCouponConfig;
 
         return jpaQueryFactory.select(
                         Projections.constructor(
@@ -93,9 +92,9 @@ public class ProductCouponCustomRepositoryImpl extends BaseAbstractRepositoryImp
 
     @Override
     public ProductCouponDto selectProductCoupon(ProductCouponDto dto) throws Exception {
-        QProductCoupon qProductCoupon = QProductCoupon.productCoupon;
+        QProductCouponConfig qProductCoupon = QProductCouponConfig.productCouponConfig;
 
-        ProductCoupon productCoupon = jpaQueryFactory.selectFrom(qProductCoupon)
+        ProductCouponConfig productCoupon = jpaQueryFactory.selectFrom(qProductCoupon)
                 .where(new BooleanBuilder().and(qProductCoupon.idx.eq(dto.getIdx())))
                 .fetchOne();
         return productCoupon == null ? null : new ProductCouponDto(productCoupon);

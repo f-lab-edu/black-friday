@@ -1,6 +1,7 @@
 package com.flab.blackfriday.product.coupon.dto;
 
-import com.flab.blackfriday.product.coupon.domain.ProductCoupon;
+import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
+import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
 import com.flab.blackfriday.product.coupon.dto.action.ProductCouponRequest;
 import com.flab.blackfriday.product.coupon.dto.action.ProductCouponUpdateRequest;
 import lombok.AllArgsConstructor;
@@ -49,11 +50,11 @@ public class ProductCouponDto {
 
     private LocalDateTime modifyDate;
 
-    public ProductCoupon toCreateEntity() {
-        return ProductCoupon.createOf(this);
+    public ProductCouponConfig toCreateEntity() {
+        return ProductCouponConfig.createOf(this);
     }
 
-    public ProductCouponDto(ProductCoupon entity) {
+    public ProductCouponDto(ProductCouponConfig entity) {
         this.idx = entity.getIdx();
         this.title = entity.getTitle();
         this.remark = entity.getRemark();

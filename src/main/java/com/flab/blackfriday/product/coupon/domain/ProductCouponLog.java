@@ -35,7 +35,7 @@ public class ProductCouponLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="coupon_idx", nullable = false , foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private ProductCoupon productCoupon;
+    private ProductCouponConfig productCouponConfig;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id",  nullable = false,  foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

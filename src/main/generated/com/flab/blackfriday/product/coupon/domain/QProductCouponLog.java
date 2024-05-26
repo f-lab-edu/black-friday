@@ -30,7 +30,7 @@ public class QProductCouponLog extends EntityPathBase<ProductCouponLog> {
 
     public final DateTimePath<java.time.LocalDateTime> modifyDate = createDateTime("modifyDate", java.time.LocalDateTime.class);
 
-    public final QProductCoupon productCoupon;
+    public final QProductCouponConfig productCouponConfig;
 
     public final QProductCouponEpin productCouponEpin;
 
@@ -53,7 +53,7 @@ public class QProductCouponLog extends EntityPathBase<ProductCouponLog> {
     public QProductCouponLog(Class<? extends ProductCouponLog> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.flab.blackfriday.auth.member.domain.QMember(forProperty("member")) : null;
-        this.productCoupon = inits.isInitialized("productCoupon") ? new QProductCoupon(forProperty("productCoupon")) : null;
+        this.productCouponConfig = inits.isInitialized("productCouponConfig") ? new QProductCouponConfig(forProperty("productCouponConfig")) : null;
         this.productCouponEpin = inits.isInitialized("productCouponEpin") ? new QProductCouponEpin(forProperty("productCouponEpin"), inits.get("productCouponEpin")) : null;
     }
 

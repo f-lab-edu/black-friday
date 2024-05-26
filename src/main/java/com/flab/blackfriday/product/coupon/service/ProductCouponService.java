@@ -1,12 +1,13 @@
 package com.flab.blackfriday.product.coupon.service;
 
-import com.flab.blackfriday.product.coupon.domain.ProductCoupon;
+import com.flab.blackfriday.common.exception.CommonNotUseException;
+import com.flab.blackfriday.common.exception.NoExistAuthException;
+import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
 import com.flab.blackfriday.product.coupon.domain.ProductCouponEpin;
 import com.flab.blackfriday.product.coupon.dto.*;
 import com.flab.blackfriday.product.coupon.repository.ProductCouponEpinRepository;
 import com.flab.blackfriday.product.coupon.repository.ProductCouponRepository;
 import com.flab.blackfriday.product.coupon.util.CouponRandomUtil;
-import com.flab.blackfriday.product.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -143,6 +144,15 @@ public class ProductCouponService {
         try {
             String couponNum = "";
 
+            ProductCouponConfig productCoupon = productCouponRepository.findById(epinDto.getIdx()).orElse(null);
+            if(productCoupon == null ){
+                throw new NoExistAuthException("잘못된 접근입니다.");
+            }
+
+            if(productCoupon.getCouponCnt() == 0){
+                throw new CommonNotUseException("해당 상품에 대한 쿠폰을 생성할 수 없습니다.");
+            }
+
             //쿠폰생성
             while (true) {
                 couponNum = CouponRandomUtil.randomMix(10);
@@ -152,7 +162,12 @@ public class ProductCouponService {
             }
 
             epinDto.setCouponNum(couponNum);
+            //쿠폰 생성
             productCouponEpinRepository.save(epinDto.toEntity());
+
+            //쿠폰 환경 정보 마이너스 처리
+            productCoupon.minusCnt(1);
+
         }finally {
             lock.unlock();
         }

@@ -40,7 +40,7 @@ public class ProductCouponEpin implements Persistable<String> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="idx")
-    private ProductCoupon productCoupon;
+    private ProductCouponConfig productCouponConfig;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -63,8 +63,8 @@ public class ProductCouponEpin implements Persistable<String> {
     @Builder
     public ProductCouponEpin(ProductCouponEpinDto epinDto) {
         this.couponNum = epinDto.getCouponNum();
-        this.productCoupon = new ProductCoupon();
-        productCoupon.addIdx(epinDto.getIdx());
+        this.productCouponConfig = new ProductCouponConfig();
+        productCouponConfig.addIdx(epinDto.getIdx());
         if(!StringUtils.isBlank(epinDto.getId())){
             this.member = new Member();
             member.addId(epinDto.getId());

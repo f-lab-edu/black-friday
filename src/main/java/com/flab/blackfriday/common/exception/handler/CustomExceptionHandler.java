@@ -1,5 +1,6 @@
 package com.flab.blackfriday.common.exception.handler;
 
+import com.flab.blackfriday.common.exception.CommonNotUseException;
 import com.flab.blackfriday.order.exception.OrderValidatorException;
 import com.flab.blackfriday.order.payment.exception.PaymentFailException;
 import com.flab.blackfriday.common.exception.NoExistAuthException;
@@ -29,6 +30,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(NoExistAuthException.class)
     public final ResponseEntity<Object> handleNoExisException(NoExistAuthException ex) {
+        ExceptionResponse exceptionResponse= new ExceptionResponse(ex.getMessage(),ex.getErrorCode());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * 공통 에외처리
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(CommonNotUseException.class)
+    public final ResponseEntity<Object> handleCommonNotUseException(CommonNotUseException ex) {
         ExceptionResponse exceptionResponse= new ExceptionResponse(ex.getMessage(),ex.getErrorCode());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
