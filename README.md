@@ -6,3 +6,11 @@
 
 
 트래픽이 많이 발생한다는 쇼핑몰의 특성에 맞게 대용량 트래픽을 고려한 어플리케이션으로 개발하였습니다.
+
+# 프로젝트 사용기술
+* Spring Boot
+* Java 17
+* JPA
+* MYSQL
+* Docker
+* Intellij IDEA
