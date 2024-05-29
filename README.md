@@ -4,19 +4,24 @@
 
 백엔드 로직을 집중적으로 개발하기 위하여 프론트와 분리한 REST API 서버로 개발을 하였습니다.
 
-
-트래픽이 많이 발생한다는 쇼핑몰의 특성에 맞게 대용량 트래픽을 고려한 어플리케이션으로 개발하였습니다.
+# 프로젝트 목표
+* 쇼핑몰 같이 대용량 트래픽 상황을 고려해 기능을 구현
+* 객체 지향적인 개발을 할 것
+* 성능 테스트를 통해 개선 및 리펙토링 할 것
 
 # 프로젝트 사용기술
-* Spring Boot
-* Java 17
-* JPA
-* MYSQL
-* Docker
-* Intellij IDEA
-* K6
-* Grafana
-* Influxdb
+* `Spring Boot`
+* `Java 17`
+* `JPA`
+* `MYSQL`
+* `Docker`
+* `Intellij IDEA`
+* `K6`
+* `Grafana`
+* `Influxdb`
+
+# 작업기간
+`2024.4.15` ~ 
 
 # 프로젝트 설계
 
