@@ -11,15 +11,7 @@
 * MSA 방식을 고려하는 방식으로 구현
 
 # 프로젝트 사용기술
-* `Spring Boot`
-* `Java 17`
-* `JPA`
-* `MYSQL`
-* `Docker`
-* `Intellij IDEA`
-* `K6`
-* `Grafana`
-* `Influxdb`
+`Spring Boot` `Java 17` `JPA` `MYSQL` `Docker` `Intellij IDEA` `K6` `Grafana` `Influxdb`
 
 # 작업기간
 `2024.4.15` ~ 
