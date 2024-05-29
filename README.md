@@ -28,3 +28,4 @@
 ### 환경 설정
 + [데이터베이스 결정](https://github.com/f-lab-edu/black-friday/wiki/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-%EA%B2%B0%EC%A0%95)
 + [프로젝트 방향(프레임 워크 결정)](https://github.com/f-lab-edu/black-friday/wiki/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%B0%A9%ED%96%A5(%ED%94%84%EB%A0%88%EC%9E%84%EC%9B%8C%ED%81%AC-%EA%B2%B0%EC%A0%95))
++ API 개발방식 결정
