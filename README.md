@@ -14,6 +14,9 @@
 * MYSQL
 * Docker
 * Intellij IDEA
+* K6
+* Grafana
+* Influxdb
 
 # 프로젝트 설계
 
