@@ -24,5 +24,10 @@
 + [세션방식 결정](https://github.com/f-lab-edu/black-friday/wiki/%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%84%B8%EC%85%98%EB%B0%A9%EC%8B%9D-%EA%B2%B0%EC%A0%95)
 + [이커머스의 결제서비스 모방하기위한 방법선택](https://github.com/f-lab-edu/black-friday/wiki/Mocks-server-%EC%A0%81%EC%9A%A9)
 
+
+## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 요점
++ [성능테스트](https://github.com/f-lab-edu/black-friday/blob/feature/performance/README.md)
+
+
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) DB ERD 구조
 <img width="949" alt="스크린샷 2024-05-30 오전 12 14 15" src="https://github.com/f-lab-edu/black-friday/assets/67618667/9737b555-1fbe-405c-8c75-d586d1230de8">
