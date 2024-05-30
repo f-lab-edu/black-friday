@@ -43,4 +43,5 @@ k6만으로 결과값을 얻어 볼수 있지만 실시간 유입 정보들을 �
 
 
 ## 성능 테스트 상황설정
-* [성능테스트Part1](https://github.com/f-lab-edu/black-friday/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8-Part-1-(%EC%83%81%ED%92%88-%EC%A1%B0%ED%9A%8C-%ED%85%8C%EC%8A%A4%ED%8A%B8))
+* [성능테스트 Part1](https://github.com/f-lab-edu/black-friday/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8-Part-1-(%EC%83%81%ED%92%88-%EC%A1%B0%ED%9A%8C-%ED%85%8C%EC%8A%A4%ED%8A%B8))
+* [성능테스트 Part2](https://github.com/f-lab-edu/black-friday/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8-Part2-(%EC%A3%BC%EB%AC%B8-%EC%B2%98%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8))
