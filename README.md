@@ -11,7 +11,7 @@
 
 
 ## 성능테스트를 위한 환경세팅
-+ 이커머스 환경상 상품의 개수가 많아야 된다는 판단
++ 이커머스 환경상 상품의 개수가 많아야 된다고 판단
   + Product table(상품 테이블)
   + Product item table(상품 옵션 테이블)
   + Product BlackFriday table(상품 블랙프라이데이 할인 테이블)에 대한 dump 데이터 추거
