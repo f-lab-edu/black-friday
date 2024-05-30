@@ -22,7 +22,7 @@
 + [프로젝트 방향(프레임 워크 결정)](https://github.com/f-lab-edu/black-friday/wiki/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%B0%A9%ED%96%A5(%ED%94%84%EB%A0%88%EC%9E%84%EC%9B%8C%ED%81%AC-%EA%B2%B0%EC%A0%95))
 + [API 개발방식 결정](https://github.com/f-lab-edu/black-friday/wiki/API-%EA%B0%9C%EB%B0%9C%EB%B0%A9%EC%8B%9D-%EA%B3%A0%EC%B4%AC)
 + [세션방식 결정](https://github.com/f-lab-edu/black-friday/wiki/%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%84%B8%EC%85%98%EB%B0%A9%EC%8B%9D-%EA%B2%B0%EC%A0%95)
-+ MSA 방식 결정
++ [이커머스의 결제서비스 모방하기위한 방법선택](https://github.com/f-lab-edu/black-friday/wiki/Mocks-server-%EC%A0%81%EC%9A%A9)
 
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) DB ERD 구조
 <img width="949" alt="스크린샷 2024-05-30 오전 12 14 15" src="https://github.com/f-lab-edu/black-friday/assets/67618667/9737b555-1fbe-405c-8c75-d586d1230de8">
