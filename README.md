@@ -26,7 +26,7 @@
 
 
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 요점
-+ [성능테스트](https://github.com/f-lab-edu/black-friday/blob/feature/performance/README.md)
++ [성능 테스트 해보기](https://github.com/f-lab-edu/black-friday/blob/feature/performance/README.md)
 
 
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) DB ERD 구조
