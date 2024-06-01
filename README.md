@@ -1,33 +1,47 @@
-# ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 블랙 프라이데이
-초특가 할인을 해주는 쇼핑몰 서비스 입니다.
+# Feature/Performance Branch 정보
+
+## 주요내용
++ `성능 테스트`
+  + Docker 서버에 올려 테스트
++ 할인 쿠폰 발급 및 사용 API 구축
 
 
-백엔드 로직을 집중적으로 개발하기 위하여 프론트는 프로토타입으로 대체하고 REST API 서버로 개발을 하였습니다.
-
-# ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 목표
-* 쇼핑몰 같이 대용량 트래픽 상황을 고려해 기능을 구현
-* 객체 지향적인 개발을 할 것
-* 성능 테스트를 통해 개선 및 리펙토링 할 것
-* MSA 방식을 고려하는 방식으로 구현
-
-# ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 사용기술
-`Spring Boot` `Java 17` `JPA` `MYSQL` `Docker` `Intellij IDEA` `K6` `Grafana` `Influxdb`
-
-# ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 작업기간
-`2024.4.15` ~ 
-
-# ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 의사결정
-
-+ [데이터베이스 결정](https://github.com/f-lab-edu/black-friday/wiki/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-%EA%B2%B0%EC%A0%95)
-+ [프로젝트 방향(프레임 워크 결정)](https://github.com/f-lab-edu/black-friday/wiki/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%B0%A9%ED%96%A5(%ED%94%84%EB%A0%88%EC%9E%84%EC%9B%8C%ED%81%AC-%EA%B2%B0%EC%A0%95))
-+ [API 개발방식 결정](https://github.com/f-lab-edu/black-friday/wiki/API-%EA%B0%9C%EB%B0%9C%EB%B0%A9%EC%8B%9D-%EA%B3%A0%EC%B4%AC)
-+ [세션방식 결정](https://github.com/f-lab-edu/black-friday/wiki/%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%84%B8%EC%85%98%EB%B0%A9%EC%8B%9D-%EA%B2%B0%EC%A0%95)
-+ [이커머스의 결제서비스 모방하기위한 방법선택](https://github.com/f-lab-edu/black-friday/wiki/Mocks-server-%EC%A0%81%EC%9A%A9)
+## 작업기간
+`2024-05-20 ~ 2024-05-27`
 
 
-## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 요점
-+ [성능 테스트 해보기](https://github.com/f-lab-edu/black-friday/blob/feature/performance/README.md)
+## 성능테스트를 위한 환경세팅
++ 성능테스트 공간
+  + 로컬 Window Docker 서버에 서비스 구축
++ 이커머스 환경상 상품의 개수가 많아야 된다고 판단
+  + Product table(상품 테이블)
+  + Product item table(상품 옵션 테이블)
+  + Product BlackFriday table(상품 블랙프라이데이 할인 테이블)
+    + 에 대한 dump 데이터 각각에 10000개의 dump 데이터를 밀어 넣었음 [참조 사이트](https://www.mockaroo.com/)
 
 
-## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) DB ERD 구조
-<img width="949" alt="스크린샷 2024-05-30 오전 12 14 15" src="https://github.com/f-lab-edu/black-friday/assets/67618667/9737b555-1fbe-405c-8c75-d586d1230de8">
+## 성능테스트 도구
+
+### grafana K6 도입
+### `nGrinder`가 아닌 `k6`를 왜 선택하였는가?
+JVM과 유사한 언어를 사용하는 nGrinder를 이용하여 성능을 테스트할 수 있겠지만 nGrinder는 Groovy로 스크립트를 이용하는 시스템입니다.
+우선적으로 제일 큰것은 Groovy를 사용해본적이 없어 익숙하지 않다는 점에서 시간적인 비용이 많이 발생할 수 있겠다고 판단하였습니다.
+반면에, k6는 JS 기반 스크립트를 사용하는 언어이기 때문에 좀 더 익숙한 언어에 근접하여 선택하게 되었습니다. 그리고 구체적인 스크립트 구조를 생성할 수 있다는 장점이 있어 선택하게 되었습니다.
+
+### `grafana,influxdb` 모니터링 시각화 도입
+k6만으로 결과값을 얻어 볼수 있지만 실시간 유입 정보들을 확인하기 위한 모니터링을 통한 경험을 해보고자 하였습니다.
+
+
+## 성능 테스트시 보았던 요소들
+### 하드웨어 자원의 소모
++ CPU 사용률의 % 크기가 어떻게 이루어질지 확인
++ RAM 메모리 소모는 어느정도 발생하는가? 에 대한 확인
++ DISK 공간 사용에 대한 확인
+
+### 데이터베이스의 성능
++ 데이터베이스 요청에 따른 속도 이슈 확인
+
+
+## 성능 테스트 상황설정
+* [성능테스트 Part1](https://github.com/f-lab-edu/black-friday/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8-Part-1-(%EC%83%81%ED%92%88-%EC%A1%B0%ED%9A%8C-%ED%85%8C%EC%8A%A4%ED%8A%B8))
+* [성능테스트 Part2](https://github.com/f-lab-edu/black-friday/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8-Part2-(%EC%A3%BC%EB%AC%B8-%EC%B2%98%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8))
