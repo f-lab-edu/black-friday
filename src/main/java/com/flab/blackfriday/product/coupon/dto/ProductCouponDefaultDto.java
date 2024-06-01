@@ -19,10 +19,16 @@ import lombok.Setter;
 @Setter
 public class ProductCouponDefaultDto extends BaseDto {
 
+    private long productCouponIdx = 0;
+
     private String date = "";
 
     private String startDate = "";
 
     private String endDate = "";
+
+    private CouponUseStatus useStatus;
+
+    private String memberId = "";
 
 }

@@ -4,6 +4,7 @@ import com.flab.blackfriday.common.controller.BaseModuleController;
 import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductSummaryResponse;
+import com.flab.blackfriday.product.dto.ProductTempResponse;
 import com.flab.blackfriday.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * packageName    : com.flab.blackfriday.product.controller
@@ -54,6 +55,17 @@ public class ProductUserController extends BaseModuleController {
         //블랙프라이데이 할인 적용된 정보만 조회
         searchDto.setBlackFridayUseYn("Y");
         return productService.selectProductPageListWithBlackFriday(searchDto);
+    }
+
+    /**
+     * 테스트
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(API_URL+"/product/list/v2/blackfriday")
+    public List<ProductTempResponse> selectProductBlackV2FridayList(ProductDefaultDto searchDto) throws Exception {
+        return productService.selectProductPageWithItemTempList(searchDto);
     }
 
     /**

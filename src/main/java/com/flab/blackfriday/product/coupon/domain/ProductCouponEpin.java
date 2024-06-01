@@ -2,10 +2,13 @@ package com.flab.blackfriday.product.coupon.domain;
 
 import com.flab.blackfriday.auth.member.domain.Member;
 import com.flab.blackfriday.product.coupon.dto.CouponUseStatus;
+import com.flab.blackfriday.product.coupon.dto.CouponUseType;
+import com.flab.blackfriday.product.coupon.dto.ProductCouponEpinDto;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Comment;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -37,11 +40,15 @@ public class ProductCouponEpin implements Persistable<String> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="idx")
-    private ProductCoupon productCoupon;
+    private ProductCouponConfig productCouponConfig;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name="id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
+
+    @Comment("쿠폰형태")
+    @Enumerated(EnumType.STRING)
+    private CouponUseType useType;
 
     @Comment("사용상태")
     @Enumerated(EnumType.STRING)
@@ -52,6 +59,24 @@ public class ProductCouponEpin implements Persistable<String> {
 
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
+    @Builder
+    public ProductCouponEpin(ProductCouponEpinDto epinDto) {
+        this.couponNum = epinDto.getCouponNum();
+        this.productCouponConfig = new ProductCouponConfig();
+        productCouponConfig.addIdx(epinDto.getIdx());
+        if(!StringUtils.isBlank(epinDto.getId())){
+            this.member = new Member();
+            member.addId(epinDto.getId());
+        }
+        this.useType = CouponUseType.valueOf(epinDto.getUseType());
+        this.useStatus = CouponUseStatus.valueOf(epinDto.getUseStatus());
+    }
+
+    public void addUpdateEpin(ProductCouponEpinDto epinDto) {
+        this.member.addId(epinDto.getId());
+        this.useStatus = CouponUseStatus.valueOf(epinDto.getUseStatus());
+    }
 
     @Override
     public String getId() {

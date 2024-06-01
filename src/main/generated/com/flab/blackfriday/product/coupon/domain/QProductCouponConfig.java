@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QProductCoupon is a Querydsl query type for ProductCoupon
+ * QProductCouponConfig is a Querydsl query type for ProductCouponConfig
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QProductCoupon extends EntityPathBase<ProductCoupon> {
+public class QProductCouponConfig extends EntityPathBase<ProductCouponConfig> {
 
-    private static final long serialVersionUID = -399112086L;
+    private static final long serialVersionUID = -108462004L;
 
-    public static final QProductCoupon productCoupon = new QProductCoupon("productCoupon");
+    public static final QProductCouponConfig productCouponConfig = new QProductCouponConfig("productCouponConfig");
 
     public final StringPath categCdGroup = createString("categCdGroup");
 
@@ -41,16 +41,16 @@ public class QProductCoupon extends EntityPathBase<ProductCoupon> {
 
     public final StringPath title = createString("title");
 
-    public QProductCoupon(String variable) {
-        super(ProductCoupon.class, forVariable(variable));
+    public QProductCouponConfig(String variable) {
+        super(ProductCouponConfig.class, forVariable(variable));
     }
 
-    public QProductCoupon(Path<? extends ProductCoupon> path) {
+    public QProductCouponConfig(Path<? extends ProductCouponConfig> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QProductCoupon(PathMetadata metadata) {
-        super(ProductCoupon.class, metadata);
+    public QProductCouponConfig(PathMetadata metadata) {
+        super(ProductCouponConfig.class, metadata);
     }
 
 }

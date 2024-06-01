@@ -1,9 +1,6 @@
 package com.flab.blackfriday.product.repository;
 
-import com.flab.blackfriday.product.dto.ProductDefaultDto;
-import com.flab.blackfriday.product.dto.ProductDto;
-import com.flab.blackfriday.product.dto.ProductItemDto;
-import com.flab.blackfriday.product.dto.ProductSummaryResponse;
+import com.flab.blackfriday.product.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -36,6 +33,14 @@ public interface ProductCustomRepository {
      * @throws Exception
      */
     Page<ProductSummaryResponse> selectProductPageListWithBlackFriday(ProductDefaultDto searchDto) throws Exception;
+
+    /**
+     * 블랙
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    List<ProductTempResponse> selectProductPageWithItemTempList(ProductDefaultDto searchDto) throws Exception;
 
 
     /**

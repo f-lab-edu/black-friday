@@ -16,18 +16,18 @@ import java.time.LocalDateTime;
  * fileName       : Coupon
  * author         : GAMJA
  * date           : 2024/05/15
- * description    : 할인 쿠폰 entity
+ * description    : 할인 쿠폰 설정 entity
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
  * 2024/05/15        GAMJA       최초 생성
  */
 @Entity
-@Table(name = "product_coupon")
+@Table(name = "product_coupon_config")
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class ProductCoupon {
+public class ProductCouponConfig {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
@@ -87,10 +87,21 @@ public class ProductCoupon {
         this.sale = dto.getSale();
     }
 
-    public static ProductCoupon createOf(ProductCouponDto dto) {
-        ProductCoupon productCoupon = new ProductCoupon();
+    public static ProductCouponConfig createOf(ProductCouponDto dto) {
+        ProductCouponConfig productCoupon = new ProductCouponConfig();
         productCoupon.addProductCreate(dto);
         return productCoupon;
+    }
+
+    public void addIdx(long idx) {
+        this.idx = idx;
+    }
+
+    /**
+     * 쿠폰 마이너스 처리
+     */
+    public void minusCnt(int cnt) {
+        this.couponCnt -= cnt;
     }
 
 }

@@ -1,21 +1,20 @@
 package com.flab.blackfriday.product.repository.impl;
 
+import com.flab.blackfriday.auth.member.domain.QMember;
 import com.flab.blackfriday.category.domain.QCategory;
 import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
 import com.flab.blackfriday.product.domain.ProductItem;
 import com.flab.blackfriday.product.domain.QProduct;
 import com.flab.blackfriday.product.domain.QProductBlackFriday;
 import com.flab.blackfriday.product.domain.QProductItem;
-import com.flab.blackfriday.product.dto.ProductDefaultDto;
-import com.flab.blackfriday.product.dto.ProductDto;
-import com.flab.blackfriday.product.dto.ProductItemDto;
-import com.flab.blackfriday.product.dto.ProductSummaryResponse;
+import com.flab.blackfriday.product.dto.*;
 import com.flab.blackfriday.product.repository.ProductCustomRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.expression.spel.ast.Projection;
@@ -130,6 +129,25 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
                 .fetch();
 
         return new PageImpl<>(list,searchDto.getPageable(),totCnt);
+    }
+
+    @Override
+    public List<ProductTempResponse> selectProductPageWithItemTempList(ProductDefaultDto searchDto) throws Exception {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append("SELECT  " +
+                " p_num as pNum," +
+                " idx as pitmIdx," +
+                " p_itm_cnt as pCnt," +
+                " p_itm_price as price" +
+                " FROM (");
+        sql.append(" SELECT p.*, itm.idx, itm.p_itm_cnt, itm.p_itm_price FROM product p ");
+        sql.append(" JOIN ( SELECT p_num,idx,p_itm_cnt,p_itm_price FROM product_item ) itm on p.p_num = itm.p_num ");
+        sql.append(" JOIN product_black_friday fri on p.p_num = fri.p_num ");
+        sql.append(" ) T ").append(" LIMIT ").append(searchDto.getPageable().getOffset()).append(",").append(searchDto.getPageable().getPageSize());
+
+        JpaResultMapper jpaResultMapper = new JpaResultMapper();
+        return jpaResultMapper.list(entityManager.createNativeQuery(sql.toString()),ProductTempResponse.class);
     }
 
     @Override
