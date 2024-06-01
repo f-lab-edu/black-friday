@@ -6,10 +6,10 @@ import lombok.Setter;
 
 /**
  * packageName    : com.flab.blackfriday.product.coupon.dto.action
- * fileName       : ProductCouponUpdateRequest
+ * fileName       : ProductCouponRequest
  * author         : GAMJA
  * date           : 2024/05/15
- * description    : 쿠폰 수정 request
+ * description    : 쿠폰 세팅 create request
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
@@ -18,9 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProductCouponUpdateRequest {
-
-    private  long idx = 0L;
+public class ProductCouponConfigRequest {
 
     private String title = "";
 

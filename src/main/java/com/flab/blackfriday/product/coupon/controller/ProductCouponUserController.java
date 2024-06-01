@@ -65,7 +65,7 @@ public class ProductCouponUserController extends BaseModuleController {
     }
 
     /**
-     * 쿠폰 수정 완료
+     * 쿠폰 수정 완료(사용여부)
      * @param productCouponEpinUpdateRequest
      * @return
      * @throws Exception

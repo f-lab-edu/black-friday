@@ -3,7 +3,6 @@ package com.flab.blackfriday.product.coupon.dto;
 import com.flab.blackfriday.product.coupon.domain.ProductCouponEpin;
 import com.flab.blackfriday.product.coupon.dto.action.ProductCouponEpinRequest;
 import com.flab.blackfriday.product.coupon.dto.action.ProductCouponEpinUpdateRequest;
-import com.flab.blackfriday.product.coupon.dto.action.ProductCouponUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,9 +1,9 @@
 package com.flab.blackfriday.product.coupon.dto;
 
 import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
-import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
-import com.flab.blackfriday.product.coupon.dto.action.ProductCouponRequest;
-import com.flab.blackfriday.product.coupon.dto.action.ProductCouponUpdateRequest;
+import com.flab.blackfriday.product.coupon.dto.action.ProductCouponConfigDeleteRequest;
+import com.flab.blackfriday.product.coupon.dto.action.ProductCouponConfigRequest;
+import com.flab.blackfriday.product.coupon.dto.action.ProductCouponConfigUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,7 +71,7 @@ public class ProductCouponDto {
      * @param create
      * @return
      */
-    public static ProductCouponDto createOf(ProductCouponRequest create) {
+    public static ProductCouponDto createOf(ProductCouponConfigRequest create) {
         ProductCouponDto request = new ProductCouponDto();
         request.setTitle(create.getTitle());
         request.setRemark(create.getRemark());
@@ -91,7 +91,7 @@ public class ProductCouponDto {
      * @param update
      * @return
      */
-    public static ProductCouponDto updateOf(ProductCouponUpdateRequest update) {
+    public static ProductCouponDto updateOf(ProductCouponConfigUpdateRequest update) {
         ProductCouponDto request = new ProductCouponDto();
         request.setIdx(update.getIdx());
         request.setTitle(update.getTitle());
@@ -104,6 +104,17 @@ public class ProductCouponDto {
         request.setProductGroup(update.getProductGroup());
         request.setCouponCnt(update.getCouponCnt());
         request.setSale(update.getSale());
+        return request;
+    }
+
+    /**
+     * 삭제 메소드
+     * @param delete
+     * @return
+     */
+    public static ProductCouponDto deleteOf(ProductCouponConfigDeleteRequest delete) {
+        ProductCouponDto request = new ProductCouponDto();
+        request.setIdx(delete.getIdx());
         return request;
     }
 

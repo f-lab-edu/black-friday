@@ -5,9 +5,10 @@ import com.flab.blackfriday.common.exception.NoExistAuthException;
 import com.flab.blackfriday.product.coupon.domain.ProductCouponConfig;
 import com.flab.blackfriday.product.coupon.domain.ProductCouponEpin;
 import com.flab.blackfriday.product.coupon.dto.*;
+import com.flab.blackfriday.product.coupon.repository.ProductCouponConfigRepository;
 import com.flab.blackfriday.product.coupon.repository.ProductCouponEpinRepository;
-import com.flab.blackfriday.product.coupon.repository.ProductCouponRepository;
 import com.flab.blackfriday.product.coupon.util.CouponRandomUtil;
+import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -33,40 +34,40 @@ import java.util.concurrent.locks.ReentrantLock;
 @Transactional(readOnly = true)
 public class ProductCouponService {
 
-    private final ProductCouponRepository productCouponRepository;
+    private final ProductCouponConfigRepository productCouponConfigRepository;
 
     private final ProductCouponEpinRepository productCouponEpinRepository;
 
     private final Lock lock = new ReentrantLock();
 
     /**
-     * 쿠폰 페이지 목록 (페이징 o )
+     * 쿠폰 환경 페이지 목록 (페이징 o )
      * @param searchDto
      * @return
      * @throws Exception
      */
     public Page<ProductCouponSummaryResponse> selectProductCouponPageList(ProductCouponDefaultDto searchDto) throws Exception {
-        return productCouponRepository.selectProductCouponPageList(searchDto);
+        return productCouponConfigRepository.selectProductCouponPageList(searchDto);
     }
 
     /**
-     * 쿠폰 페이지 목록
+     * 쿠폰 환경 페이지 목록
      * @param searchDto
      * @return
      * @throws Exception
      */
     public List<ProductCouponSummaryResponse> selectProductCouponList(ProductCouponDefaultDto searchDto) throws Exception {
-        return productCouponRepository.selectProductCouponList(searchDto);
+        return productCouponConfigRepository.selectProductCouponList(searchDto);
     }
 
     /**
-     * 쿠폰 상세 정보
+     * 쿠폰 환경설정 상세 정보
      * @param dto
      * @return
      * @throws Exception
      */
     public ProductCouponDto selectProductCoupon(ProductCouponDto dto) throws Exception {
-        return productCouponRepository.selectProductCoupon(dto);
+        return productCouponConfigRepository.selectProductCoupon(dto);
     }
 
     /**
@@ -76,7 +77,7 @@ public class ProductCouponService {
      */
     @Transactional
     public void insertProductCoupon(ProductCouponDto dto) throws Exception {
-        productCouponRepository.save(dto.toCreateEntity());
+        productCouponConfigRepository.save(dto.toCreateEntity());
     }
 
     /**
@@ -86,7 +87,7 @@ public class ProductCouponService {
      */
     @Transactional
     public void updateProductCoupon(ProductCouponDto dto) throws Exception {
-        productCouponRepository.findById(dto.getIdx()).ifPresent(productCoupon -> productCoupon.addProductUpdate(dto));
+        productCouponConfigRepository.findById(dto.getIdx()).ifPresent(productCoupon -> productCoupon.addProductUpdate(dto));
     }
 
     /**
@@ -96,7 +97,13 @@ public class ProductCouponService {
      */
     @Transactional
     public void deleteProductCoupon(ProductCouponDto dto) throws Exception {
-        productCouponRepository.deleteById(dto.getIdx());
+        ProductCouponDefaultDto searchDto = new ProductCouponDefaultDto();
+        searchDto.setProductCouponIdx(dto.getIdx());
+        Page<ProductCouponEpinWithInfoResponse> list = productCouponEpinRepository.selectProductCouponEpinPageList(searchDto);
+        if(list.getSize() > 0){
+            throw new CommonNotUseException("이미 해당 내용으로 발급된 쿠폰이 존재합니다.");
+        }
+        productCouponConfigRepository.deleteById(dto.getIdx());
     }
 
     /**
@@ -144,7 +151,7 @@ public class ProductCouponService {
         try {
             String couponNum = "";
 
-            ProductCouponConfig productCoupon = productCouponRepository.findById(epinDto.getIdx()).orElse(null);
+            ProductCouponConfig productCoupon = productCouponConfigRepository.findById(epinDto.getIdx()).orElse(null);
             if(productCoupon == null ){
                 throw new NoExistAuthException("잘못된 접근입니다.");
             }
