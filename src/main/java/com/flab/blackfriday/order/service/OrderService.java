@@ -131,7 +131,7 @@ public class OrderService {
 
                 Order order = dto.toEntity();
                 order.addProduct(product);
-                order = orderRepository.save(dto.toEntity());
+                order = orderRepository.save(order);
 
                 List<ProductItemDto> itemList = resultVO.getElement();
                 for (OrderItemDto itemDto : dto.getItemList()) {
@@ -175,7 +175,7 @@ public class OrderService {
 
             Order order = dto.toEntity();
             order.addProduct(product);
-            order = orderRepository.save(dto.toEntity());
+            order = orderRepository.save(order);
 
             List<ProductItemDto> itemList = resultVO.getElement();
             for (OrderItemDto itemDto : dto.getItemList()) {
