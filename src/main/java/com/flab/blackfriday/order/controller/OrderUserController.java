@@ -4,12 +4,14 @@ import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.common.controller.BaseModuleController;
 import com.flab.blackfriday.common.dto.ResultVO;
 import com.flab.blackfriday.common.exception.NoExistAuthException;
+import com.flab.blackfriday.common.response.CommonResponse;
 import com.flab.blackfriday.order.dto.OrderDefaultDto;
 import com.flab.blackfriday.order.dto.OrderDto;
 import com.flab.blackfriday.order.dto.OrderSummaryResponse;
 import com.flab.blackfriday.order.dto.action.OrderCreateRequest;
 import com.flab.blackfriday.order.payment.exception.PaymentFailException;
 import com.flab.blackfriday.order.payment.service.PaymentService;
+import com.flab.blackfriday.order.service.OrderLockService;
 import com.flab.blackfriday.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,8 @@ import org.springframework.web.bind.annotation.*;
 public class OrderUserController extends BaseModuleController {
 
     private final OrderService orderService;
+
+    private final OrderLockService orderLockService;
 
     private final PaymentService paymentService;
 
@@ -85,19 +89,108 @@ public class OrderUserController extends BaseModuleController {
      */
     @PostMapping(API_URL+"/order")
     public ResponseEntity<?> insertOrder(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+        try {
+            if (!memberSession.isAuthenticated()) {
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.", HttpStatus.UNAUTHORIZED.name());
+            }
 
-        if(!memberSession.isAuthenticated()){
-            logger.error("### 인증되지 않은 접근. ### ");
-            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            System.out.println("#### create tostring : " + orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderService.insertOrder(orderDto);
+            paymentService.payment(orderDto);
+        } catch (Exception e) {
+            logger.error("#### order pay error : {}", e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.", null), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
+    /**
+     * 주문 상품 재고 적합성 제거한 내용
+     * @param orderCreateRequest
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(API_URL+"/order/nolock")
+    public ResponseEntity<?> insertOrderNoLock(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+        try {
+            if (!memberSession.isAuthenticated()) {
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.", HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : " + orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderService.insertOrderNoLock(orderDto);
+            paymentService.payment(orderDto);
+        } catch (Exception e) {
+            logger.error("#### order pay error : {}", e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.", null), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
+    /**
+     * 주문 처리 비관적 lock 테스트
+     * @param orderCreateRequest
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(API_URL+"/order/lock/v1")
+    public ResponseEntity<?> insertOrderLockv1(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+
+        try {
+            if (!memberSession.isAuthenticated()) {
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.", HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : " + orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderService.insertOrderPessimisticLock(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-       System.out.println("#### create tostring : "+orderCreateRequest.toString());
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
 
-        OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
-        orderDto.setId(memberSession.getMemberSession().getId());
-        orderService.insertOrder(orderDto);
+    /**
+     * 주문 처리 낙관적 lock 테스트
+     * @param orderCreateRequest
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(API_URL+"/order/lock/v2")
+    public ResponseEntity<?> insertOrderLockv2(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
 
-        return ResponseEntity.ok().body(new ResultVO("OK","주문신청되었습니다."));
+        try {
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderLockService.insertOrderOptimisticLock(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
     }
 
     /**

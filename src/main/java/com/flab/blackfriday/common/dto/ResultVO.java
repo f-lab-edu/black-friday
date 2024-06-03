@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultVO{
+public class ResultVO<T>{
 
     /**상태코드*/
     private String statusCode;
@@ -29,7 +29,7 @@ public class ResultVO{
     private String message;
     
     /**object 요소*/
-    private Object element;
+    private T element;
 
     public ResultVO(String statusCode) {
         this.statusCode = statusCode;

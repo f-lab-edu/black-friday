@@ -67,6 +67,18 @@ public class ProductDto {
         return Product.builder().dto(this).build();
     }
 
+    public ProductDto (Product product) {
+        this.pNum = product.getPNum();
+        this.categCd = product.getCategory().getCategCd();
+        this.categNm = product.getCategory().getCategNm();
+        this.pTitle = product.getPTitle();
+        this.pContent = product.getPContent();
+        this.ord = product.getOrd();
+        this.useYn = product.getUseYn();
+        this.createDate = product.getCreateDate();
+        this.modifyDate = product.getModifyDate();
+    }
+
     public ProductDto (String pNum, String categCd, String categNm, String pTitle,
                        String pContent, int ord, String useYn, LocalDateTime createDate, LocalDateTime modifyDate){
         this.pNum = pNum;

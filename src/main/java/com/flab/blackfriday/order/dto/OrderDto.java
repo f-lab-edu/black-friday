@@ -6,6 +6,7 @@ import com.flab.blackfriday.order.dto.action.OrderItemRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class OrderDto {
     
     /**일련번호*/
@@ -58,10 +60,6 @@ public class OrderDto {
      * @return
      */
     public Order toEntity(){
-        return Order.builder().dto(this).build();
-    }
-
-    public Order toCreateEntity() {
         return Order.builder().dto(this).build();
     }
 

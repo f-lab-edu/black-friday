@@ -66,7 +66,7 @@ public class ProductItem {
             this.idx = dto.getIdx();
         }
         this.product = new Product();
-        product.addPnum(dto.getPNum());
+        product.addPNum(dto.getPNum());
         this.pItmName = dto.getPItmName();
         this.pItmPrice = dto.getPItmPrice();
         this.pItmCnt = dto.getPItmCnt();

@@ -70,7 +70,7 @@ public class Order {
             this.idx = dto.getIdx();
         }
         this.product = new Product();
-        this.product.addPnum(dto.getPNum());
+        this.product.addPNum(dto.getPNum());
         this.member = new Member();
         this.member.addId(dto.getId());
         this.orderStatusType = OrderStatusType.valueOf(dto.getOrderStatus());
@@ -82,6 +82,10 @@ public class Order {
 
     public void addIdx(Long idx){
         this.idx = idx;
+    }
+
+    public void addProduct(Product product) {
+        this.product = product;
     }
 
 }

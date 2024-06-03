@@ -66,6 +66,9 @@ public class Product implements Persistable<String> {
     @LastModifiedDate
     private LocalDateTime modifyDate; //수정일자
 
+    @Version
+    private Long version;
+
 
     @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.LAZY)
     List<ProductItem> itemList = new ArrayList<>();
@@ -89,7 +92,7 @@ public class Product implements Persistable<String> {
     }
 
 
-    public void addPnum(String pNum){
+    public void addPNum(String pNum){
         this.pNum = pNum;
     }
 

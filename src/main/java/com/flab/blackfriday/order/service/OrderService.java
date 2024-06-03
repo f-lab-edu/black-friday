@@ -5,20 +5,22 @@ import com.flab.blackfriday.order.domain.Order;
 import com.flab.blackfriday.order.dto.*;
 import com.flab.blackfriday.order.exception.OrderValidatorException;
 import com.flab.blackfriday.order.repository.OrderRepository;
+import com.flab.blackfriday.product.domain.Product;
 import com.flab.blackfriday.product.dto.ProductBlackFridayDto;
+import com.flab.blackfriday.product.dto.ProductDefaultDto;
 import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductItemDto;
+import com.flab.blackfriday.product.repository.ProductRepository;
 import com.flab.blackfriday.product.service.ProductBlackFridayService;
 import com.flab.blackfriday.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -44,6 +46,9 @@ public class OrderService {
 
     //상품 service
     private final ProductService productService;
+
+    //상품 lock repository
+    private final ProductRepository productRepository;
 
     //상품 할인 정보 service
     private final ProductBlackFridayService productBlackFridayService;
@@ -109,17 +114,26 @@ public class OrderService {
     public void insertOrder(OrderDto dto) throws Exception {
         lock.lock();
         try {
+            Product product = productRepository.findById(dto.getPNum()).orElse(null);
             // 주문 관련 상품 유효성 체크
-            ResultVO resultVO = checkOrderValidator(dto);
+            ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
             if (resultVO.getStatusCode().equals("OK")) {
                 dto.setOrderStatus(OrderStatusType.NONE.name());
                 dto.setPayStatus(PayStatusType.WAIT.name());
 
                 //할인율 적용
                 this.orderPriceSale(dto);
-                Order order = orderRepository.save(dto.toCreateEntity());
 
-                List<ProductItemDto> itemList = (List<ProductItemDto>) resultVO.getElement();
+
+                if(product == null){
+                    throw new OrderValidatorException("존재하지 않는 상품입니다.");
+                }
+
+                Order order = dto.toEntity();
+                order.addProduct(product);
+                order = orderRepository.save(dto.toEntity());
+
+                List<ProductItemDto> itemList = resultVO.getElement();
                 for (OrderItemDto itemDto : dto.getItemList()) {
                     itemDto.setOIdx(order.getIdx());
                     System.out.println("### itemDto toString : "+itemDto.toString());
@@ -142,29 +156,157 @@ public class OrderService {
     }
 
     /**
+     * lock 걸지 않음
+     * @param dto
+     * @throws Exception
+     */
+    @Transactional
+    public void insertOrderNoLock(OrderDto dto) throws Exception {
+
+        Product product = productRepository.findById(dto.getPNum()).orElse(null);
+        // 주문 관련 상품 유효성 체크
+        ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
+        if (resultVO.getStatusCode().equals("OK")) {
+            dto.setOrderStatus(OrderStatusType.NONE.name());
+            dto.setPayStatus(PayStatusType.WAIT.name());
+
+            //할인율 적용
+            this.orderPriceSale(dto);
+
+            Order order = dto.toEntity();
+            order.addProduct(product);
+            order = orderRepository.save(dto.toEntity());
+
+            List<ProductItemDto> itemList = resultVO.getElement();
+            for (OrderItemDto itemDto : dto.getItemList()) {
+                itemDto.setOIdx(order.getIdx());
+                System.out.println("### itemDto toString : "+itemDto.toString());
+                //주문 옵션 등록
+                orderRepository.insertOrderItem(itemDto);
+                for (ProductItemDto productItemDto : itemList) {
+                    if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                        productItemDto.minusItemCnt(itemDto.getPCnt());
+                        //상품 옵션 개수 업데이트
+                        productService.updateProductItemCnt(productItemDto);
+                    }
+                }
+            }
+        } else {
+            throw new OrderValidatorException(resultVO.getMessage());
+        }
+    }
+
+    /**
+     *  비관적 lock을 이용한 성능테스트 용
+     * @param dto
+     * @throws Exception
+     */
+    @Transactional
+    public void insertOrderPessimisticLock(OrderDto dto) throws Exception {
+        Product product = productRepository.selectProductPessimisticLock(dto.getPNum());
+        // 주문 관련 상품 유효성 체크
+        ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
+        if (resultVO.getStatusCode().equals("OK")) {
+
+            dto.setOrderStatus(OrderStatusType.NONE.name());
+            dto.setPayStatus(PayStatusType.WAIT.name());
+
+            //할인율 적용
+            this.orderPriceSale(dto);
+            Order order = dto.toEntity();
+            order.addProduct(product);
+            order = orderRepository.save(order);
+
+            List<ProductItemDto> itemList = resultVO.getElement();
+            for (OrderItemDto itemDto : dto.getItemList()) {
+                itemDto.setOIdx(order.getIdx());
+                System.out.println("### itemDto toString : "+itemDto.toString());
+                //주문 옵션 등록
+                orderRepository.insertOrderItem(itemDto);
+                for (ProductItemDto productItemDto : itemList) {
+                    if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                        productItemDto.minusItemCnt(itemDto.getPCnt());
+                        //상품 옵션 개수 업데이트
+                        productService.updateProductItemCnt(productItemDto);
+                    }
+                }
+            }
+        } else {
+            throw new OrderValidatorException(resultVO.getMessage());
+        }
+        //마지막에는 for update이기 떄문에 무조건 업데이트 진행
+        productRepository.save(product);
+    }
+
+    /**
+     *  낙관적 lock을 이용한 성능테스트 용
+     * @param dto
+     * @throws Exception
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void insertOrderOptimisticLock(OrderDto dto) throws Exception {
+        //db lock
+        Product product = productRepository.selectProductoptimisticLock(dto.getPNum());
+
+        // 주문 관련 상품 유효성 체크
+        ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
+        if (resultVO.getStatusCode().equals("OK")) {
+
+            dto.setOrderStatus(OrderStatusType.NONE.name());
+            dto.setPayStatus(PayStatusType.WAIT.name());
+
+            //할인율 적용
+            this.orderPriceSale(dto);
+            Order order = dto.toEntity();
+            order.addProduct(product);
+            order = orderRepository.save(order);
+
+            List<ProductItemDto> itemList = resultVO.getElement();
+            for (OrderItemDto itemDto : dto.getItemList()) {
+                itemDto.setOIdx(order.getIdx());
+                System.out.println("### itemDto toString : "+itemDto.toString());
+                //주문 옵션 등록
+                orderRepository.insertOrderItem(itemDto);
+                for (ProductItemDto productItemDto : itemList) {
+                    if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                        productItemDto.minusItemCnt(itemDto.getPCnt());
+                        //상품 옵션 개수 업데이트
+                        productService.updateProductItemCnt(productItemDto);
+                    }
+                }
+            }
+        } else {
+            throw new OrderValidatorException(resultVO.getMessage());
+        }
+        //마지막에는 for update이기 떄문에 무조건 업데이트 진행
+        productRepository.save(product);
+    }
+
+    /**
      * 상품 유효성 체크
      * @param orderDto
      * @return
      * @throws Exception
      */
-    private ResultVO checkOrderValidator(OrderDto orderDto) throws Exception{
+    private ResultVO<List<ProductItemDto>> checkOrderValidator(OrderDto orderDto,Product product) throws Exception{
 
-        ProductDto productDto = new ProductDto();
-        productDto.setPNum(orderDto.getPNum());
-        productDto = productService.selectProduct(productDto);
-
+        Map<String,Object> map = new HashMap<>();
+        ProductDto productDto = null;
         //상품 사용여부 체크
-        if(productDto != null ){
+        if(product != null ){
+            productDto = new ProductDto(product);
             if(productDto.getUseYn().equals("N")) {
-                return new ResultVO("FAIL", "중지된 상품 상품입니다.");
+                return new ResultVO<>("FAIL", "중지된 상품 상품입니다.");
             }
         }else {
-            return new ResultVO("FAIL", "존재하지 않는 상품입니다.");
+            return new ResultVO<>("FAIL", "존재하지 않는 상품입니다.");
         }
 
-
-
         List<ProductItemDto> resultItemDto = new ArrayList<>();
+
+        ProductDefaultDto searchDto = new ProductDefaultDto();
+        searchDto.setPNum(productDto.getPNum());
+        productDto.setItemList(productRepository.selectProductItemList(searchDto));
 
         //상품 유효성 체크
         if(!productDto.getItemList().isEmpty()){
@@ -173,18 +315,18 @@ public class OrderService {
                     if (Objects.equals(itemDto.getPitmIdx(), pItemDto.getIdx())){
                         //개수가 작을 경우
                         if(itemDto.getPCnt() > pItemDto.getPItmCnt()){
-                            return new ResultVO("FAIL","신청하신 상품의 개수가 부족합니다.");
+                            return new ResultVO<>("FAIL","신청하신 상품의 개수가 부족합니다.");
                         }
                         //상품 금액 체크
                         if((itemDto.getPCnt()*itemDto.getPrice()) != (itemDto.getPCnt() * pItemDto.getPItmPrice())){
-                            return new ResultVO("FAIL","신청하신 상품의 개수가 부족합니다.");
+                            return new ResultVO<>("FAIL","신청하신 상품의 개수가 부족합니다.");
                         }
                         resultItemDto.add(pItemDto);
                     }
                 }
             }
         }
-        return new ResultVO("OK","정상",resultItemDto);
+        return new ResultVO<>("OK","정상",resultItemDto);
     }
 
     /**

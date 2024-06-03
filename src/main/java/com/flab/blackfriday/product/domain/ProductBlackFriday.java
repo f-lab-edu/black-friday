@@ -58,7 +58,7 @@ public class ProductBlackFriday {
             this.idx = dto.getIdx();
         }
         product = new Product();
-        product.addPnum(dto.getPNum());
+        product.addPNum(dto.getPNum());
         this.sale = dto.getSale();
         this.useYn = dto.getUseYn();
         this.createDate = dto.getCreateDate();
