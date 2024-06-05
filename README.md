@@ -29,5 +29,11 @@
 + [성능 테스트 해보기](https://github.com/f-lab-edu/black-friday/blob/feature/performance/README.md)
 
 
+
+## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 패키지 구조
+![image](https://github.com/f-lab-edu/black-friday/assets/67618667/aacf2580-ebbc-41cf-9a12-479e3e8e3ed4)
+
+
+
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) DB ERD 구조
 <img width="949" alt="스크린샷 2024-05-30 오전 12 14 15" src="https://github.com/f-lab-edu/black-friday/assets/67618667/9737b555-1fbe-405c-8c75-d586d1230de8">
