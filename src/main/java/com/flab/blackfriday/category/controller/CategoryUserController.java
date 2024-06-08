@@ -33,7 +33,7 @@ public class CategoryUserController extends BaseModuleController {
     private final CategoryService categoryService;
 
     /**
-     * 카테고리 조회
+     * 카테고리 조회(캐싱 적용)
      * @param searchDto
      * @return
      * @throws Exception
@@ -42,7 +42,7 @@ public class CategoryUserController extends BaseModuleController {
     public List<CategorySummaryResponse> selectCategoryList(CategoryDefaultDto searchDto) throws Exception {
 
         searchDto.setUseYn("Y");
-        List<CategoryDto> list = categoryService.selectCategoryList(searchDto);
+        List<CategoryDto> list = categoryService.selectCategoryCacheList(searchDto);
         return list.stream()
                 .map(x-> CategorySummaryResponse.builder().dto(x).build()).toList();
     }

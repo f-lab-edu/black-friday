@@ -114,7 +114,7 @@ public class OrderUserController extends BaseModuleController {
      * @return
      * @throws Exception
      */
-    @PostMapping(API_URL+"/order/nolock")
+    @PostMapping(API_URL+"/order/no/lock")
     public ResponseEntity<?> insertOrderNoLock(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
         try {
             if (!memberSession.isAuthenticated()) {
@@ -184,6 +184,98 @@ public class OrderUserController extends BaseModuleController {
             OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
             orderDto.setId(memberSession.getMemberSession().getId());
             orderLockService.insertOrderOptimisticLock(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
+    @PostMapping(API_URL+"/order/lock/v3")
+    public ResponseEntity<?> insertOrderLockv3(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+
+        try {
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderLockService.insertOrderOptimisticLockAsync(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
+    @PostMapping(API_URL+"/order/lock/v4")
+    public ResponseEntity<?> insertOrderLockv4(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+
+        try {
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderLockService.insertOrderOptimisticLockAsyncCache(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
+    @PostMapping(API_URL+"/order/lock/v5")
+    public ResponseEntity<?> insertOrderLockv5(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+
+        try {
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderLockService.insertOrderOptimisticLockAsyncCacheThread(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
+    @PostMapping(API_URL+"/order/lock/v6")
+    public ResponseEntity<?> insertOrderLockv6(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+
+        try {
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderLockService.insertOrderOptimisticLockAsyncCacheNoLimit(orderDto);
             paymentService.payment(orderDto);
         }catch (Exception e) {
             logger.error("#### order pay error : {}",e.getMessage());

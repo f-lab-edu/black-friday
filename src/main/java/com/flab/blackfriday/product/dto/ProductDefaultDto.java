@@ -31,4 +31,8 @@ public class ProductDefaultDto extends BaseDto {
     /**블랙 프라이데이 사용유무 */
     private String blackFridayUseYn = "";
 
+    private String useYn = "";
+
+    private String populYn = "";
+
 }

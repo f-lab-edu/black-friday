@@ -6,6 +6,8 @@ import com.flab.blackfriday.product.dto.*;
 import com.flab.blackfriday.product.repository.ProductBlackFridayRepository;
 import com.flab.blackfriday.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +53,29 @@ public class ProductService {
     }
 
     /**
+     * 블랙 프라이데이 포함된 목록 조회(페이징 x)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    @Cacheable(value="product_popular")
+    public List<ProductSummaryResponse> selectProductPopulListWithBLackFriday(ProductDefaultDto searchDto) throws Exception {
+        searchDto.setPopulYn("Y");
+        return productRepository.selectProductListWithBLackFriday(searchDto);
+    }
+
+    /**
+     * 할인가가 제일 높은 에 10명만 가져오기
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    @Cacheable(value="product_most_blackfriday")
+    public List<ProductSummaryResponse> selectProductListWithMostBlackFriday(ProductDefaultDto searchDto) throws Exception {
+        return productRepository.selectProductListWithMostBlackFriday(searchDto);
+    }
+
+    /**
      * 블랙 프라이데이 임시 목록 조회
      * @param searchDto
      * @return
@@ -92,6 +117,7 @@ public class ProductService {
      * @throws Exception
      */
     @Transactional
+    @CacheEvict(value = {"product_popular","product_most_blackfriday"})
     public void saveProduct(ProductDto dto) throws Exception {
         Product product = dto.toEntity();
         //옵션 정보가 있을 경우 담는다.
@@ -118,6 +144,7 @@ public class ProductService {
      * @throws Exception
      */
     @Transactional
+    @CacheEvict(value = {"product_popular","product_most_blackfriday"})
     public void deleteProduct(ProductDto dto) throws Exception {
         productRepository.delete(dto.toEntity());
     }

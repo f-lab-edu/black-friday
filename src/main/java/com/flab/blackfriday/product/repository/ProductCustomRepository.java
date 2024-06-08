@@ -35,6 +35,22 @@ public interface ProductCustomRepository {
     Page<ProductSummaryResponse> selectProductPageListWithBlackFriday(ProductDefaultDto searchDto) throws Exception;
 
     /**
+     * 블랙 프라이데이 적용 목록 (페이징 x)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    List<ProductSummaryResponse> selectProductListWithBLackFriday(ProductDefaultDto searchDto) throws Exception;
+
+    /**
+     * 가장 할인가가 많이 적용된 리스트 조회
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    List<ProductSummaryResponse> selectProductListWithMostBlackFriday(ProductDefaultDto searchDto) throws Exception;
+
+    /**
      * 블랙
      * @param searchDto
      * @return

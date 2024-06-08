@@ -43,7 +43,8 @@ public interface ProductRepository extends JpaRepository<Product,String>,Product
      * @param productNum
      * @return
      */
-    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+//    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+    @Lock(LockModeType.OPTIMISTIC)
     @Query("select p from Product p where p.pNum = :productNum")
     Product selectProductoptimisticLock(@Param("productNum") String productNum);
 

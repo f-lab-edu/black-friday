@@ -1,6 +1,5 @@
 package com.flab.blackfriday.product.repository.impl;
 
-import com.flab.blackfriday.auth.member.domain.QMember;
 import com.flab.blackfriday.category.domain.QCategory;
 import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
 import com.flab.blackfriday.product.domain.ProductItem;
@@ -10,17 +9,15 @@ import com.flab.blackfriday.product.domain.QProductItem;
 import com.flab.blackfriday.product.dto.*;
 import com.flab.blackfriday.product.repository.ProductCustomRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.expression.spel.ast.Projection;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,26 +37,34 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
         super(entityManager, jpaQueryFactory);
     }
 
-
     public BooleanBuilder commonQuery(ProductDefaultDto searchDto) throws Exception {
         BooleanBuilder sql = new BooleanBuilder();
         QProduct qProduct = QProduct.product;
         QProductBlackFriday qProductBlackFriday  = QProductBlackFriday.productBlackFriday;
-        if(searchDto.getSstring() != null && !searchDto.getSstring().isEmpty()){
+
+        if(!StringUtils.isBlank(searchDto.getSstring())){
             if(searchDto.getStype().equals("title")){
                 sql.and(qProduct.pTitle.like("%"+searchDto.getSstring()+"%"));
             }
         }
-        if(searchDto.getPNum() != null && !searchDto.getPNum().isEmpty()){
+        if(!StringUtils.isBlank(searchDto.getPNum())){
             sql.and(qProduct.pNum.eq(searchDto.getPNum()));
         }
-        if(searchDto.getCategCd() != null && !searchDto.getCategCd().isEmpty()){
+        if(!StringUtils.isBlank(searchDto.getCategCd())){
             sql.and(qProduct.category.categCd.eq(searchDto.getCategCd()));
         }
         //블랙 프라이데이 사용유무
-        if(searchDto.getBlackFridayUseYn() != null && !searchDto.getBlackFridayUseYn().isEmpty()){
+        if(!StringUtils.isBlank(searchDto.getBlackFridayUseYn())){
             sql.and(qProductBlackFriday.useYn.eq(searchDto.getBlackFridayUseYn()));
         }
+        //상품 사용 여부
+        if(!StringUtils.isBlank(searchDto.getUseYn())){
+            sql.and(qProduct.useYn.eq(searchDto.getUseYn()));
+        }
+        if(!StringUtils.isBlank(searchDto.getPopulYn())){
+            sql.and(qProduct.populYn.eq(searchDto.getPopulYn()));
+        }
+
         return sql;
     }
 
@@ -129,6 +134,45 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
                 .fetch();
 
         return new PageImpl<>(list,searchDto.getPageable(),totCnt);
+    }
+
+    @Override
+    public List<ProductSummaryResponse> selectProductListWithBLackFriday(ProductDefaultDto searchDto) throws Exception {
+        QProduct qProduct = QProduct.product;
+        QProductBlackFriday qProductBlackFriday = QProductBlackFriday.productBlackFriday;
+        QCategory qCategory = QCategory.category;
+        return jpaQueryFactory.select(
+                        Projections.fields(ProductSummaryResponse.class,
+                                qProduct.pNum,
+                                qProduct.pTitle,
+                                qProduct.category.categCd,
+                                qCategory.categNm,
+                                qProductBlackFriday.sale
+                        )
+                )
+                .from(qProduct)
+                .join(qCategory).on(qProduct.category.categCd.eq(qCategory.categCd))
+                .fetchJoin()
+                .leftJoin(qProductBlackFriday).on(qProduct.pNum.eq(qProductBlackFriday.product.pNum))
+                .fetchJoin()
+                .where(commonQuery(searchDto))
+                .offset(searchDto.getPageable().getOffset())
+                .limit(searchDto.getPageable().getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public List<ProductSummaryResponse> selectProductListWithMostBlackFriday(ProductDefaultDto searchDto) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("SELECT p_num as pNum, p_title as pTitle, p.categ_cd as categCd, cc.categ_nm as categNm  FROM product p ");
+        sql.append("JOIN ( SELECT categ_cd , categ_nm FROM cms_category ) cc on p.categ_cd = cc.categ_cd ");
+        sql.append("JOIN product_black_friday fri on p.p_num = fri.p_num ");
+        sql.append("WHERE p.use_yn = 'Y' and fri.use_yn = 'Y'");
+        sql.append("Order by fri.sale DESC ");
+        sql.append("limit ").append(searchDto.getPageable().getOffset()).append(",").append(searchDto.getPageable().getPageSize());
+
+        JpaResultMapper jpaResultMapper = new JpaResultMapper();
+        return jpaResultMapper.list(entityManager.createNativeQuery(sql.toString()),ProductSummaryResponse.class);
     }
 
     @Override

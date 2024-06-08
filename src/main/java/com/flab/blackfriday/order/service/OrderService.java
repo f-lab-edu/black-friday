@@ -13,9 +13,12 @@ import com.flab.blackfriday.product.dto.ProductItemDto;
 import com.flab.blackfriday.product.repository.ProductRepository;
 import com.flab.blackfriday.product.service.ProductBlackFridayService;
 import com.flab.blackfriday.product.service.ProductService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -225,6 +228,7 @@ public class OrderService {
                 orderRepository.insertOrderItem(itemDto);
                 for (ProductItemDto productItemDto : itemList) {
                     if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                        //상품 개수 제거
                         productItemDto.minusItemCnt(itemDto.getPCnt());
                         //상품 옵션 개수 업데이트
                         productService.updateProductItemCnt(productItemDto);
@@ -244,14 +248,11 @@ public class OrderService {
      * @throws Exception
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void insertOrderOptimisticLock(OrderDto dto) throws Exception {
-        //db lock
-        Product product = productRepository.selectProductoptimisticLock(dto.getPNum());
+    public void insertOrderOptimisticLock(OrderDto dto , Product product) throws Exception {
 
         // 주문 관련 상품 유효성 체크
         ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
         if (resultVO.getStatusCode().equals("OK")) {
-
             dto.setOrderStatus(OrderStatusType.NONE.name());
             dto.setPayStatus(PayStatusType.WAIT.name());
 
@@ -278,8 +279,6 @@ public class OrderService {
         } else {
             throw new OrderValidatorException(resultVO.getMessage());
         }
-        //마지막에는 for update이기 떄문에 무조건 업데이트 진행
-        productRepository.save(product);
     }
 
     /**
@@ -315,10 +314,6 @@ public class OrderService {
                     if (Objects.equals(itemDto.getPitmIdx(), pItemDto.getIdx())){
                         //개수가 작을 경우
                         if(itemDto.getPCnt() > pItemDto.getPItmCnt()){
-                            return new ResultVO<>("FAIL","신청하신 상품의 개수가 부족합니다.");
-                        }
-                        //상품 금액 체크
-                        if((itemDto.getPCnt()*itemDto.getPrice()) != (itemDto.getPCnt() * pItemDto.getPItmPrice())){
                             return new ResultVO<>("FAIL","신청하신 상품의 개수가 부족합니다.");
                         }
                         resultItemDto.add(pItemDto);

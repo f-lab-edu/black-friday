@@ -58,6 +58,31 @@ public class ProductUserController extends BaseModuleController {
     }
 
     /**
+     * 할인가 제일 많이 들어가는 목록 조회 (캐싱 적용)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(API_URL+"/product/list/most/blackfriday")
+    public List<ProductSummaryResponse> selectProductListWithMostBlackFriday(ProductDefaultDto searchDto) throws Exception {
+        searchDto.setPage(1);
+        searchDto.setSize(10);
+        return productService.selectProductListWithMostBlackFriday(searchDto);
+    }
+
+    /**
+     * 인기 상품 목록 조회( 캐싱 적용)
+     * @param searchDto
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(API_URL+"/product/popul/list")
+    public List<ProductSummaryResponse> selectProductPopulListWithBLackFriday(ProductDefaultDto searchDto) throws Exception {
+        searchDto.setUseYn("Y");
+        return productService.selectProductPopulListWithBLackFriday(searchDto);
+    }
+
+    /**
      * 테스트
      * @param searchDto
      * @return

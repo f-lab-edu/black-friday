@@ -52,6 +52,9 @@ public class ProductDto {
 
     /**수정 일자*/
     private LocalDateTime modifyDate;
+    
+    /**인기 상품 여부*/
+    private String populYn;
 
     /**블렉프라이데이 설정 정보*/
     private ProductBlackFridayDto productBlackFridayDto = new ProductBlackFridayDto();
@@ -75,6 +78,7 @@ public class ProductDto {
         this.pContent = product.getPContent();
         this.ord = product.getOrd();
         this.useYn = product.getUseYn();
+        this.populYn = product.getPopulYn();
         this.createDate = product.getCreateDate();
         this.modifyDate = product.getModifyDate();
     }

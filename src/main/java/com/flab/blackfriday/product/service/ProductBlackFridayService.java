@@ -4,6 +4,7 @@ import com.flab.blackfriday.product.dto.ProductBlackFridayDefaultDto;
 import com.flab.blackfriday.product.dto.ProductBlackFridayDto;
 import com.flab.blackfriday.product.repository.ProductBlackFridayRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,7 @@ public class ProductBlackFridayService {
      * @throws Exception
      */
     @Transactional
+    @CacheEvict(value = "product_most_blackfriday")
     public void saveProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
         productBlackFridayRepository.save(dto.toEntity());
     }
@@ -62,6 +64,7 @@ public class ProductBlackFridayService {
      * @throws Exception
      */
     @Transactional
+    @CacheEvict(value = "product_most_blackfriday")
     public void deleteProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
         productBlackFridayRepository.deleteById(dto.getIdx());
     }

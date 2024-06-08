@@ -5,6 +5,7 @@ import com.flab.blackfriday.product.dto.ProductDto;
 import com.flab.blackfriday.product.dto.ProductItemDto;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -69,6 +70,10 @@ public class Product implements Persistable<String> {
     @Version
     private Long version;
 
+    @Comment("인기상품여부")
+    @Column(length = 1, columnDefinition = "N")
+    private String populYn;
+
 
     @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE},fetch = FetchType.LAZY)
     List<ProductItem> itemList = new ArrayList<>();
@@ -82,6 +87,7 @@ public class Product implements Persistable<String> {
         this.pContent = dto.getPContent();
         this.ord  = dto.getOrd();
         this.useYn = dto.getUseYn();
+        this.populYn = dto.getPopulYn();
         this.createDate = dto.getCreateDate();
         this.modifyDate = dto.getModifyDate();
     }
