@@ -285,6 +285,29 @@ public class OrderUserController extends BaseModuleController {
         return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
     }
 
+    @PostMapping(API_URL+"/order/lock/v7")
+    public ResponseEntity<?> insertOrderLockv7(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
+
+        try {
+            if(!memberSession.isAuthenticated()){
+                logger.error("### 인증되지 않은 접근. ### ");
+                throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+            }
+
+            System.out.println("#### create tostring : "+orderCreateRequest.toString());
+
+            OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
+            orderDto.setId(memberSession.getMemberSession().getId());
+            orderLockService.insertOrderOptimisticLockAsyncCacheNoLimitv2(orderDto);
+            paymentService.payment(orderDto);
+        }catch (Exception e) {
+            logger.error("#### order pay error : {}",e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+    }
+
     /**
      * 결제 신청
      * @param idx

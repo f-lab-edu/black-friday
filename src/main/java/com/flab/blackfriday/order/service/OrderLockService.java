@@ -191,5 +191,47 @@ public class OrderLockService {
 
     }
 
+    @Transactional
+    @Async
+    public void insertOrderOptimisticLockAsyncCacheNoLimitv2(OrderDto dto) throws Exception {
+
+        //db lock
+        Product product = productRepository.selectProductoptimisticLock(dto.getPNum());
+
+        int count = 1;
+        boolean flag = true;
+
+        while(true) {
+            try{
+                if(count > 3){
+                    flag = false;
+                    break;
+                }
+                //캐싱 정보
+                int cacheVersion = (int) cacheManager.getCache("productVersion").get(dto.getPNum()).get();
+                //캐싱 정보가 불일치 할 경우 예외처리
+                if(cacheVersion != product.getVersion()) {
+                    throw new OptimisticLockException("캐싱 product version 불일치");
+                }
+
+                orderService.insertOrderOptimisticLock(dto,product);
+                //마지막에는 for update이기 떄문에 무조건 업데이트 진행
+                product = productRepository.save(product);
+
+                // 업데이트 후에는 캐시 갱신
+                cacheManager.getCache("productVersion").put(dto.getPNum(), product.getVersion());
+            }catch (OptimisticLockException e) {
+                log.error("### 낙관적 락 버전 불일치 발생 ### {}",e.getMessage());
+                count++;
+                product = productRepository.selectProductoptimisticLock(dto.getPNum());
+            }
+        }
+
+        if(!flag) {
+            throw new OptimisticLockException("3번의 재시도 결과 실패하였습니다.");
+        }
+
+    }
+
 
 }
