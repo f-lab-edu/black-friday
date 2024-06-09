@@ -11,7 +11,6 @@ spring:
     activate:
       on-profile: local
 
-
   datasource:
     url: jdbc:mysql://localhost:3306/blackfriday?serverTimezone=UTC&characterEncoding=UTF-8
     username: blackfriday
@@ -21,6 +20,9 @@ spring:
        max-idle: 15
        min-idle: 8
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  kafka:
+    bootstrap-servers: http://localhost:9092
 
 mocks_server:
         url: http://localhost:3100
@@ -40,6 +42,9 @@ spring:
       max-idle: 15
       min-idle: 8
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  kafka:
+    bootstrap-servers: http://host.docker.internal:9092
 
 mocks_server:
          url: http://host.docker.internal:3200

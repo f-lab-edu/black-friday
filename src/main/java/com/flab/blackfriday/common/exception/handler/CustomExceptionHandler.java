@@ -1,8 +1,8 @@
 package com.flab.blackfriday.common.exception.handler;
 
 import com.flab.blackfriday.common.exception.CommonNotUseException;
-import com.flab.blackfriday.order.exception.OrderValidatorException;
-import com.flab.blackfriday.order.payment.exception.PaymentFailException;
+import com.flab.blackfriday.modules.order.exception.OrderValidatorException;
+import com.flab.blackfriday.modules.order.payment.exception.PaymentFailException;
 import com.flab.blackfriday.common.exception.NoExistAuthException;
 import com.flab.blackfriday.common.exception.dto.ExceptionResponse;
 
