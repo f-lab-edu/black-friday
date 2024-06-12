@@ -4,6 +4,7 @@ import com.flab.blackfriday.common.BaseAbstractRepositoryImpl;
 import com.flab.blackfriday.modules.product.coupon.domain.QProductCouponConfig;
 import com.flab.blackfriday.modules.product.coupon.domain.QProductCouponEpin;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponDefaultDto;
+import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponEpinDto;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponEpinWithInfoResponse;
 import com.flab.blackfriday.modules.product.coupon.repository.ProductCouponEpinCustomRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -100,6 +101,27 @@ public class ProductCouponEpinCustomRepositoryImpl extends BaseAbstractRepositor
                 .offset(searchDto.getPageable().getOffset())
                 .limit(searchDto.getPageable().getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public ProductCouponEpinDto selectProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
+        QProductCouponEpin qProductCouponEpin = QProductCouponEpin.productCouponEpin;
+        QProductCouponConfig qProductCouponConfig = QProductCouponConfig.productCouponConfig;
+        return jpaQueryFactory.select(
+                        Projections.bean(
+                                ProductCouponEpinDto.class,
+                                qProductCouponEpin.couponNum,
+                                qProductCouponEpin.member.id,
+                                qProductCouponConfig.idx,
+                                qProductCouponConfig.title,
+                                qProductCouponConfig.startDate,
+                                qProductCouponConfig.endDate
+                        )
+                ).from(qProductCouponEpin)
+                .innerJoin(qProductCouponConfig).on(qProductCouponEpin.productCouponConfig.idx.eq(qProductCouponConfig.idx))
+                .fetchJoin()
+                .where(new BooleanBuilder().and(qProductCouponEpin.couponNum.eq(epinDto.getCouponNum())))
+                .fetchFirst();
     }
 
     @Override

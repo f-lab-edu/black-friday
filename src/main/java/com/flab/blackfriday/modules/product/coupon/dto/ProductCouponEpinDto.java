@@ -37,6 +37,8 @@ public class ProductCouponEpinDto {
 
     private String useStatus = "";
 
+    private ProductCouponDto productCouponDto;
+
     private LocalDateTime createDate;
 
     private LocalDateTime modifyDate;

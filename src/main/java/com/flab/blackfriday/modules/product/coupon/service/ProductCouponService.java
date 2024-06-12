@@ -8,7 +8,9 @@ import com.flab.blackfriday.modules.product.coupon.dto.*;
 import com.flab.blackfriday.modules.product.coupon.repository.ProductCouponConfigRepository;
 import com.flab.blackfriday.modules.product.coupon.repository.ProductCouponEpinRepository;
 import com.flab.blackfriday.modules.product.coupon.util.CouponRandomUtil;
+import com.flab.blackfriday.modules.product.domain.Product;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,11 +134,7 @@ public class ProductCouponService {
      * @throws Exception
      */
     public ProductCouponEpinDto selectProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
-        ProductCouponEpin productCouponEpin = productCouponEpinRepository.findById(epinDto.getId()).orElse(null);
-        if(productCouponEpin == null) {
-            return null;
-        }
-        return new ProductCouponEpinDto(productCouponEpin);
+        return  productCouponEpinRepository.selectProductCouponEpin(epinDto);
     }
 
     /**
@@ -146,28 +144,18 @@ public class ProductCouponService {
      */
     @Transactional
     public void insertProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
-        lock.lock();
+//        lock.lock();
         try {
-            String couponNum = "";
 
             ProductCouponConfig productCoupon = productCouponConfigRepository.findById(epinDto.getIdx()).orElse(null);
             if(productCoupon == null ){
                 throw new NoExistAuthException("잘못된 접근입니다.");
             }
 
-            if(productCoupon.getCouponCnt() == 0){
+            if(productCoupon.getCouponCnt() <= 0){
                 throw new CommonNotUseException("해당 상품에 대한 쿠폰을 생성할 수 없습니다.");
             }
 
-            //쿠폰생성
-            while (true) {
-                couponNum = CouponRandomUtil.randomMix(10);
-                ProductCouponEpin existCheck = productCouponEpinRepository.findById(couponNum).orElse(null);
-                if (existCheck == null)
-                    break;
-            }
-
-            epinDto.setCouponNum(couponNum);
             //쿠폰 생성
             productCouponEpinRepository.save(epinDto.toEntity());
 
@@ -175,7 +163,7 @@ public class ProductCouponService {
             productCoupon.minusCnt(1);
 
         }finally {
-            lock.unlock();
+//            lock.unlock();
         }
     }
 

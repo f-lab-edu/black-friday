@@ -1,6 +1,7 @@
 package com.flab.blackfriday.modules.product.coupon.repository;
 
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponDefaultDto;
+import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponEpinDto;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponEpinWithInfoResponse;
 import org.springframework.data.domain.Page;
 
@@ -22,6 +23,8 @@ public interface ProductCouponEpinCustomRepository {
     Page<ProductCouponEpinWithInfoResponse> selectProductCouponEpinPageList(ProductCouponDefaultDto searchDto) throws Exception;
 
     List<ProductCouponEpinWithInfoResponse> selectProductCouponEpinList(ProductCouponDefaultDto searchDto) throws Exception;
+
+    ProductCouponEpinDto selectProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception;
 
     long selectProductCouponEpinExistCnt(String couponNum) throws Exception;
 

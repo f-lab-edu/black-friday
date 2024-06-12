@@ -43,7 +43,7 @@ public class ProductCouponEpin implements Persistable<String> {
     private ProductCouponConfig productCouponConfig;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name="member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
 
     @Comment("쿠폰형태")
