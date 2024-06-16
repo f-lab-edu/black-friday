@@ -1,9 +1,11 @@
 package com.flab.blackfriday.modules.product.repository;
 
 import com.flab.blackfriday.modules.product.domain.Product;
+import com.flab.blackfriday.modules.product.domain.ProductItem;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -43,9 +45,19 @@ public interface ProductRepository extends JpaRepository<Product,String>,Product
      * @param productNum
      * @return
      */
-//    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-    @Lock(LockModeType.OPTIMISTIC)
+    @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+//    @Lock(LockModeType.OPTIMISTIC)
     @Query("select p from Product p where p.pNum = :productNum")
     Product selectProductoptimisticLock(@Param("productNum") String productNum);
+
+    /**
+     * CAS(CompareAndSet) 방식을 이용한 재고 수정 처리 방식( 동시성 이슈를 해결하기 위함)
+     * @param idx
+     * @param cnt
+     * @return
+     */
+    @Modifying
+    @Query(value="update product_item set p_itm_cnt = p_itm_cnt - :cnt where idx = :idx and p_itm_cnt >= :cnt",nativeQuery = true)
+    int updateProductItemPcntCompareAndSet(@Param("idx") long idx, @Param("cnt") int cnt);
 
 }

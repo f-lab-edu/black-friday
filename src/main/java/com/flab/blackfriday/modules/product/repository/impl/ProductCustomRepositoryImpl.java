@@ -250,8 +250,20 @@ public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl impl
     @Override
     public List<ProductItemDto> selectProductItemList(ProductDefaultDto searchDto) throws Exception {
         QProductItem qProductItem = QProductItem.productItem;
+
+        BooleanBuilder sql = new BooleanBuilder();
+        if(!StringUtils.isBlank(searchDto.getPNum())){
+            sql.and(qProductItem.product.pNum.eq(searchDto.getPNum()));
+        }
+        if(searchDto.getItemIdx() > 0) {
+            sql.and(qProductItem.idx.eq(searchDto.getItemIdx()));
+        }
+        if(searchDto.getCnt() > 0) {
+            sql.and(qProductItem.pItmCnt.goe(searchDto.getCnt()));
+        }
+
         List<ProductItem> list = jpaQueryFactory.selectFrom(qProductItem)
-                .where(new BooleanBuilder().and(qProductItem.product.pNum.eq(searchDto.getPNum())))
+                .where(sql)
                 .fetch();
         return list.stream().map(ProductItemDto::new).toList();
     }

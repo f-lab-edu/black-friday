@@ -35,4 +35,8 @@ public class ProductDefaultDto extends BaseDto {
 
     private String populYn = "";
 
+    private long itemIdx = 0;
+
+    private int cnt = 0;
+
 }

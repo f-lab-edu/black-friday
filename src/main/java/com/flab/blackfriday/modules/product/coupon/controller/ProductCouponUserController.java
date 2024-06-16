@@ -102,21 +102,18 @@ public class ProductCouponUserController extends BaseModuleController {
             }
             productCouponEpinRequest.setUseType(useType);
 
-            //쿠폰 생성
-            Map<String,String> resultMap = couponProducerService.couponCreate(ProductCouponEpinDto.createOf(productCouponEpinRequest));
-
             //비동기 컨슈머 결과 확인
-            CompletableFuture<String> future = couponConsumerService.waitForString(resultMap.get("id")+"_"+resultMap.get("idx")+"_"+resultMap.get("couponNum"));
+            CompletableFuture<String> future = couponConsumerService.waitForString(productCouponEpinRequest.getId()+"_"+productCouponEpinRequest.getIdx());
             future.thenAccept(result -> {
                 deferredResult.setResult(ResponseEntity.ok(result));
             })
             .exceptionally(e -> {
-                deferredResult.setResult(new ResponseEntity<>("쿠폰생성시 오류가 발생하였습니다.", HttpStatus.UNPROCESSABLE_ENTITY));
+                deferredResult.setResult(new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY));
                 deferredResult.setErrorResult(e);
                 return null;
             });
 
-            couponProducerService.sendMessage(resultMap);
+            couponProducerService.sendMessage(productCouponEpinRequest);
         }catch(Exception e) {
               deferredResult.setResult(new ResponseEntity<>("쿠폰생성시 오류가 발생하였습니다.", HttpStatus.UNPROCESSABLE_ENTITY));
               deferredResult.setErrorResult(e);

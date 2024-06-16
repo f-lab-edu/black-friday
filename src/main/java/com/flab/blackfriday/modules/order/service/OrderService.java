@@ -13,6 +13,7 @@ import com.flab.blackfriday.modules.product.dto.ProductItemDto;
 import com.flab.blackfriday.modules.product.repository.ProductRepository;
 import com.flab.blackfriday.modules.product.service.ProductBlackFridayService;
 import com.flab.blackfriday.modules.product.service.ProductService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -245,7 +246,7 @@ public class OrderService {
      * @throws Exception
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void insertOrderOptimisticLock(OrderDto dto , Product product) throws Exception {
+    public boolean insertOrderOptimisticLock(OrderDto dto , Product product) throws Exception {
 
         // 주문 관련 상품 유효성 체크
         ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
@@ -276,6 +277,85 @@ public class OrderService {
         } else {
             throw new OrderValidatorException(resultVO.getMessage());
         }
+        return true;
+    }
+
+    @Transactional
+    public boolean insertOrderOptimisticNolimitLock(OrderDto dto) throws Exception {
+        try{
+            Product product = productRepository.selectProductoptimisticLock(dto.getPNum());
+            // 주문 관련 상품 유효성 체크
+            ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
+            if (resultVO.getStatusCode().equals("OK")) {
+                dto.setOrderStatus(OrderStatusType.NONE.name());
+                dto.setPayStatus(PayStatusType.WAIT.name());
+
+                //할인율 적용
+                this.orderPriceSale(dto);
+                Order order = dto.toEntity();
+                order.addProduct(product);
+                order = orderRepository.save(order);
+
+                List<ProductItemDto> itemList = resultVO.getElement();
+                for (OrderItemDto itemDto : dto.getItemList()) {
+                    itemDto.setOIdx(order.getIdx());
+                    System.out.println("### itemDto toString : "+itemDto.toString());
+                    //주문 옵션 등록
+                    orderRepository.insertOrderItem(itemDto);
+                    for (ProductItemDto productItemDto : itemList) {
+                        if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                            productItemDto.minusItemCnt(itemDto.getPCnt());
+                            //상품 옵션 개수 업데이트
+                            productService.updateProductItemCnt(productItemDto);
+                        }
+                    }
+                }
+            } else {
+                throw new OrderValidatorException(resultVO.getMessage());
+            }
+        }catch (OptimisticLockException e) {
+            throw new Exception("버전이 일치하지 않습니다.");
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean insertOrderCompareAndSet(OrderDto dto) throws Exception {
+
+        Product product = productRepository.findById(dto.getPNum()).orElse(null);
+        // 주문 관련 상품 유효성 체크
+        ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
+        if (resultVO.getStatusCode().equals("OK")) {
+            dto.setOrderStatus(OrderStatusType.NONE.name());
+            dto.setPayStatus(PayStatusType.WAIT.name());
+
+            //할인율 적용
+            this.orderPriceSale(dto);
+            Order order = dto.toEntity();
+            order.addProduct(product);
+            order = orderRepository.save(order);
+
+            List<ProductItemDto> itemList = resultVO.getElement();
+            for (OrderItemDto itemDto : dto.getItemList()) {
+                itemDto.setOIdx(order.getIdx());
+                System.out.println("### itemDto toString : "+itemDto.toString());
+                //주문 옵션 등록
+                orderRepository.insertOrderItem(itemDto);
+                for (ProductItemDto productItemDto : itemList) {
+                    if (Objects.equals(itemDto.getPitmIdx(), productItemDto.getIdx())) {
+                        //상품 옵션 개수 업데이트
+                        int result = productRepository.updateProductItemPcntCompareAndSet(productItemDto.getIdx(),itemDto.getPCnt());
+                        if(result == 0){
+                            throw new OrderValidatorException("재고가 부족합니다. 죄송합니다.");
+                        }
+                    }
+                }
+            }
+        } else {
+            throw new OrderValidatorException(resultVO.getMessage());
+        }
+
+        return true;
     }
 
     /**
