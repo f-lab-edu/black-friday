@@ -1,5 +1,6 @@
 package com.flab.blackfriday.modules.order.dto;
 
+import com.flab.blackfriday.logging.system.DetailLoggerSetter;
 import com.flab.blackfriday.modules.order.domain.OrderItem;
 import com.flab.blackfriday.modules.order.dto.action.OrderItemRequest;
 import lombok.Getter;
@@ -23,8 +24,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
-public class OrderItemDto {
+public class OrderItemDto implements DetailLoggerSetter {
 
     /**일련번호*/
     private Long idx = 0L;
@@ -76,5 +76,31 @@ public class OrderItemDto {
         orderItemDto.setPCnt(orderItemRequest.getPCnt());
         orderItemDto.setPrice(orderItemRequest.getPrice());
         return orderItemDto;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderItemDto{" +
+                "idx=" + idx +
+                ", oIdx=" + oIdx +
+                ", pitmIdx=" + pitmIdx +
+                ", pCnt=" + pCnt +
+                ", price=" + price +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                '}';
+    }
+
+    @Override
+    public String printSystemString() {
+        return "OrderItemDto{" +
+                "idx=" + idx +
+                ", oIdx=" + oIdx +
+                ", pitmIdx=" + pitmIdx +
+                ", pCnt=" + pCnt +
+                ", price=" + price +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                '}';
     }
 }

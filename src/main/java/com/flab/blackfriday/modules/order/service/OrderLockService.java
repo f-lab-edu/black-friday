@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class OrderLockService {
 
     private final OrderService orderService;
@@ -39,7 +39,7 @@ public class OrderLockService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @Async
     public void insertOrderOptimisticLock(OrderDto dto) throws Exception {
         while(true) {

@@ -2,6 +2,7 @@ package com.flab.blackfriday.modules.product.coupon.repository;
 
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponDefaultDto;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponDto;
+import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponEpinDto;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponSummaryResponse;
 import org.springframework.data.domain.Page;
 

@@ -60,6 +60,10 @@ dependencies {
 
     // 캐싱
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    //mongodb
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     // Querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'

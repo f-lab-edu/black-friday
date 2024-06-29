@@ -35,7 +35,8 @@ import java.util.List;
  */
 @Repository
 public class OrderCustomRepositoryImpl extends BaseAbstractRepositoryImpl implements OrderCustomRepository {
-    protected OrderCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
+
+    public OrderCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
         super(entityManager, jpaQueryFactory);
     }
 

@@ -13,6 +13,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,7 +34,8 @@ import java.util.List;
  */
 @Repository
 public class ProductCustomRepositoryImpl extends BaseAbstractRepositoryImpl implements ProductCustomRepository {
-    protected ProductCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
+
+    public ProductCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
         super(entityManager, jpaQueryFactory);
     }
 

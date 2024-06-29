@@ -62,6 +62,7 @@ public class ProductCouponEpin implements Persistable<String> {
 
     @Builder
     public ProductCouponEpin(ProductCouponEpinDto epinDto) {
+        System.out.println(epinDto.getCouponNum());
         this.couponNum = epinDto.getCouponNum();
         this.productCouponConfig = new ProductCouponConfig();
         productCouponConfig.addIdx(epinDto.getIdx());
@@ -74,6 +75,7 @@ public class ProductCouponEpin implements Persistable<String> {
     }
 
     public void addUpdateEpin(ProductCouponEpinDto epinDto) {
+        this.member = new Member();
         this.member.addId(epinDto.getId());
         this.useStatus = CouponUseStatus.valueOf(epinDto.getUseStatus());
     }

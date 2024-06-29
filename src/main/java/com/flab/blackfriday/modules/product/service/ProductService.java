@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -115,7 +115,7 @@ public class ProductService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @CacheEvict(value = {"product_popular","product_most_blackfriday"})
     public void saveProduct(ProductDto dto) throws Exception {
         Product product = dto.toEntity();
@@ -132,7 +132,7 @@ public class ProductService {
      * @param itemDto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public boolean updateProductItemCnt(ProductItemDto itemDto) throws Exception{
         return productRepository.updateProductItemPcnt(itemDto);
     }
@@ -142,7 +142,7 @@ public class ProductService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @CacheEvict(value = {"product_popular","product_most_blackfriday"})
     public void deleteProduct(ProductDto dto) throws Exception {
         productRepository.delete(dto.toEntity());

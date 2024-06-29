@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class AdminService {
 
     private final AdminRepository adminRepository;
@@ -49,7 +49,7 @@ public class AdminService {
      * 등록,수정
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void saveAdmin(AdminCreateRequest adminCreateRequest) throws Exception {
         Admin admin = adminRepository.findById(adminCreateRequest.getId()).orElse(null);
         if(admin != null){
@@ -66,7 +66,7 @@ public class AdminService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void deleteMember(AdminDto dto) throws Exception {
         adminRepository.deleteById(dto.getId());
     }

@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class ProductBlackFridayService {
 
     private final ProductBlackFridayRepository productBlackFridayRepository;
@@ -52,7 +52,7 @@ public class ProductBlackFridayService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @CacheEvict(value = "product_most_blackfriday")
     public void saveProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
         productBlackFridayRepository.save(dto.toEntity());
@@ -63,7 +63,7 @@ public class ProductBlackFridayService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @CacheEvict(value = "product_most_blackfriday")
     public void deleteProductBlackFriday(ProductBlackFridayDto dto) throws Exception {
         productBlackFridayRepository.deleteById(dto.getIdx());

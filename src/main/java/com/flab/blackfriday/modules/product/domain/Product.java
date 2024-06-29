@@ -69,7 +69,7 @@ public class Product implements Persistable<String> {
     private Long version;
 
     @Comment("인기상품여부")
-    @Column(length = 1, columnDefinition = "N")
+    @Column(length = 1, columnDefinition = "char default 'N' ")
     private String populYn;
 
 

@@ -16,8 +16,67 @@ services:
       - ./master_db/config/:/etc/mysql/conf.d # 이전에 나왔던 ./master/config/my.cnf 를 써줌으써 설정을 reference해줍니다.
     ports:
       - "33306:3306" # 이 옵션은 docker engine에게 각 container에게 포트를 수동으로 설정하게 해줍니다.
-  
-  # kafka 설정 파일들
+
+  # primary mongodb
+  db_mongodb1:
+    image: mongo
+    container_name: mongo1
+    hostname: mongo1
+    restart: always
+    ports:
+      - "27018:27018"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+       - ./mongo_db/mongo1:/data/db
+       - ./key:/key/mongodb
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /key/mongodb/mongodb.key --port 27018
+
+  # secondary mongodb
+  db_mongodb2:
+    image: mongo
+    container_name: mongo2
+    hostname: mongo2
+    restart: always
+    ports:
+      - "27019:27019"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./mongo_db/mongo2:/data/db
+      - ./key:/key/mongodb
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /key/mongodb/mongodb.key --port 27019
+#    depends_on:
+#      - db_mongodb1
+
+  db_mongodb3:
+    image: mongo
+    container_name: mongo3
+    hostname: mongo3
+    restart: always
+    ports:
+      - "27020:27020"
+    #    environment:
+    #      MONGO_INITDB_ROOT_USERNAME: root
+    #      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./mongo_db/mongo3:/data/db
+      - ./key:/key/mongodb
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /key/mongodb/mongodb.key --port 27020
+  #    depends_on:
+  #      - db_mongodb1
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "3015:80"
+    volumes:
+      - ./key:/key/mongodb
+      # kafka 설정 파일들
   zookeeper:
     image: wurstmeister/zookeeper:latest
     container_name: zookeeper

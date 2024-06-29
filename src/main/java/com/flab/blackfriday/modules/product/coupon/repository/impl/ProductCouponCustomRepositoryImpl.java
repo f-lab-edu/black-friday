@@ -11,8 +11,10 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,7 +32,9 @@ import java.util.List;
  */
 @Repository
 public class ProductCouponCustomRepositoryImpl extends BaseAbstractRepositoryImpl implements ProductCouponCustomRepository {
-    protected ProductCouponCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
+
+
+    public ProductCouponCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
         super(entityManager, jpaQueryFactory);
     }
 

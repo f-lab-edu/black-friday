@@ -101,13 +101,25 @@ public class ProductCouponConfigController extends BaseController {
      */
     @DeleteMapping(MGN_URL+"/product/coupon/config/del")
     public ResponseEntity<?> deleteProductCouponConfig(@RequestBody final ProductCouponConfigDeleteRequest productCouponConfigDeleteRequest) throws Exception {
-        try{
+        try {
             ProductCouponDto productCouponDto = ProductCouponDto.deleteOf(productCouponConfigDeleteRequest);
             productCouponService.deleteProductCoupon(productCouponDto);
-        }catch (Exception e){
-            logger.error("### delete product config error : {}",e.getMessage());
-            return new ResponseEntity<>(new CommonResponse("쿠폰 환경설정 삭제시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (Exception e) {
+            logger.error("### delete product config error : {}", e.getMessage());
+            return new ResponseEntity<>(new CommonResponse("쿠폰 환경설정 삭제시 오류가 발생했습니다.", null), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return ResponseEntity.ok(new CommonResponse("삭제 되었습니다.",null));
+        return ResponseEntity.ok(new CommonResponse("삭제 되었습니다.", null));
+    }
+
+    /**
+     * 관리자 쿠폰 발급
+     * @param productCouponDto
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(MGN_URL+"/product/coupon/epin/create")
+    public ResponseEntity<?> createProductCoupon(ProductCouponDto productCouponDto) throws Exception {
+        productCouponService.insertProductCouponEpin2(productCouponDto);
+        return ResponseEntity.ok(new CommonResponse("등록 되었습니다.", null));
     }
 }

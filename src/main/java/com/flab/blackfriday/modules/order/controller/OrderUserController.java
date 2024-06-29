@@ -330,7 +330,7 @@ public class OrderUserController extends BaseModuleController {
 
     @PostMapping(API_URL+"/order/lock/v9")
     public ResponseEntity<?> insertOrderLockv9(final @Valid @RequestBody OrderCreateRequest orderCreateRequest) throws Exception {
-
+        long result = 0;
         try {
             if(!memberSession.isAuthenticated()){
                 logger.error("### 인증되지 않은 접근. ### ");
@@ -341,7 +341,9 @@ public class OrderUserController extends BaseModuleController {
 
             OrderDto orderDto = OrderDto.orderOf(orderCreateRequest);
             orderDto.setId(memberSession.getMemberSession().getId());
-            if(orderService.insertOrderCompareAndSet(orderDto)){
+
+            result = orderService.insertOrderCompareAndSet(orderDto);
+            if(result > 0){
                 paymentService.payment(orderDto);
             }
         }catch (Exception e) {
@@ -349,7 +351,7 @@ public class OrderUserController extends BaseModuleController {
             return new ResponseEntity<>(new CommonResponse("주문시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다."));
+        return ResponseEntity.ok().body(new ResultVO<>("OK","주문신청되었습니다.",result));
     }
 
     /**

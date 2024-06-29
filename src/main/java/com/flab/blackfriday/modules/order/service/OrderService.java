@@ -39,7 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class OrderService {
 
     //주문 repository
@@ -111,7 +111,7 @@ public class OrderService {
      * @return
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void insertOrder(OrderDto dto) throws Exception {
         lock.lock();
         try {
@@ -161,7 +161,7 @@ public class OrderService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void insertOrderNoLock(OrderDto dto) throws Exception {
 
         Product product = productRepository.findById(dto.getPNum()).orElse(null);
@@ -202,7 +202,7 @@ public class OrderService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void insertOrderPessimisticLock(OrderDto dto) throws Exception {
         Product product = productRepository.selectProductPessimisticLock(dto.getPNum());
         // 주문 관련 상품 유효성 체크
@@ -245,7 +245,7 @@ public class OrderService {
      * @param dto
      * @throws Exception
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW,value = "mysqlTx")
     public boolean insertOrderOptimisticLock(OrderDto dto , Product product) throws Exception {
 
         // 주문 관련 상품 유효성 체크
@@ -280,7 +280,7 @@ public class OrderService {
         return true;
     }
 
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public boolean insertOrderOptimisticNolimitLock(OrderDto dto) throws Exception {
         try{
             Product product = productRepository.selectProductoptimisticLock(dto.getPNum());
@@ -319,9 +319,10 @@ public class OrderService {
         return true;
     }
 
-    @Transactional
-    public boolean insertOrderCompareAndSet(OrderDto dto) throws Exception {
+    @Transactional(value = "mysqlTx")
+    public long insertOrderCompareAndSet(OrderDto dto) throws Exception {
 
+        long idx = 0;
         Product product = productRepository.findById(dto.getPNum()).orElse(null);
         // 주문 관련 상품 유효성 체크
         ResultVO<List<ProductItemDto>> resultVO = checkOrderValidator(dto,product);
@@ -351,12 +352,15 @@ public class OrderService {
                     }
                 }
             }
+
+            idx = order.getIdx();
         } else {
             throw new OrderValidatorException(resultVO.getMessage());
         }
 
-        return true;
+        return idx;
     }
+
 
     /**
      * 상품 유효성 체크
@@ -429,7 +433,7 @@ public class OrderService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void updateOrderStatus(OrderDto dto) throws Exception {
         orderRepository.updateOrderStatus(dto);
     }
@@ -440,7 +444,7 @@ public class OrderService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void updatePayStatus(OrderDto dto) throws Exception {
         orderRepository.updatePayStatus(dto);
     }

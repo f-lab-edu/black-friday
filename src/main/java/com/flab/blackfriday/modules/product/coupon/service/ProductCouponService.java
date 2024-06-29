@@ -1,7 +1,9 @@
 package com.flab.blackfriday.modules.product.coupon.service;
 
+import com.flab.blackfriday.common.exception.BaseException;
 import com.flab.blackfriday.common.exception.CommonNotUseException;
 import com.flab.blackfriday.common.exception.NoExistAuthException;
+import com.flab.blackfriday.modules.order.exception.OrderValidatorException;
 import com.flab.blackfriday.modules.product.coupon.domain.ProductCouponConfig;
 import com.flab.blackfriday.modules.product.coupon.domain.ProductCouponEpin;
 import com.flab.blackfriday.modules.product.coupon.dto.*;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class ProductCouponService {
 
     private final ProductCouponConfigRepository productCouponConfigRepository;
@@ -76,7 +79,7 @@ public class ProductCouponService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void insertProductCoupon(ProductCouponDto dto) throws Exception {
         productCouponConfigRepository.save(dto.toCreateEntity());
     }
@@ -86,7 +89,7 @@ public class ProductCouponService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void updateProductCoupon(ProductCouponDto dto) throws Exception {
         productCouponConfigRepository.findById(dto.getIdx()).ifPresent(productCoupon -> productCoupon.addProductUpdate(dto));
     }
@@ -96,7 +99,7 @@ public class ProductCouponService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void deleteProductCoupon(ProductCouponDto dto) throws Exception {
         ProductCouponDefaultDto searchDto = new ProductCouponDefaultDto();
         searchDto.setProductCouponIdx(dto.getIdx());
@@ -138,11 +141,21 @@ public class ProductCouponService {
     }
 
     /**
+     * 쿠폰 발급 정보 제공(미리 생성된 쿠폰 중 발급 되지 않는 번호를 제공)
+     * @param idx
+     * @return
+     * @throws Exception
+     */
+    public String selectProductCouponEpinIssueToMember(long idx) throws Exception {
+        return productCouponEpinRepository.selectProductEpinFirstCouponNum(idx);
+    }
+
+    /**
      * 쿠폰 생성
      * @param epinDto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void insertProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
 //        lock.lock();
         try {
@@ -168,13 +181,60 @@ public class ProductCouponService {
     }
 
     /**
+     * 쿠폰 미리 발급
+     * @param dto
+     * @throws Exception
+     */
+    @Transactional(value = "mysqlTx")
+    public void insertProductCouponEpin2(ProductCouponDto dto) throws Exception {
+        
+        ProductCouponConfig productCoupon = productCouponConfigRepository.findById(dto.getIdx()).orElse(null);
+        if(productCoupon == null){
+            throw new NoExistAuthException("존재 하지 않는 쿠폰 이벤트 입니다.");
+        }
+
+        long totCnt = productCouponEpinRepository.selectPRoductEpinCntFromConfig(dto.getIdx());
+        if(totCnt == productCoupon.getCouponCnt()) {
+            throw new CommonNotUseException("더이상 발급이 불가능 합니다.");
+        }
+
+        //쿠폰 생성
+        int cnt = 1;
+        while(true) {
+            ProductCouponEpinDto epinDto = new ProductCouponEpinDto();
+            if(cnt > productCoupon.getCouponCnt()){
+                break;
+            }
+            epinDto.setCouponNum(CouponRandomUtil.createUuid(10) + dto.getIdx());
+            epinDto.setUseStatus(CouponUseStatus.NONE.name());
+            epinDto.setUseType(CouponUseType.NOW.name());
+            epinDto.setIdx(dto.getIdx());
+            productCouponEpinRepository.save(epinDto.toEntity());
+            cnt++;
+        }
+
+    }
+
+    /**
      * 쿠폰 수정
      * @param epinDto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void updateProductCouponEpin(ProductCouponEpinDto epinDto) throws Exception {
         productCouponEpinRepository.findById(epinDto.getCouponNum()).ifPresent(productCouponEpin -> productCouponEpin.addUpdateEpin(epinDto));
     }
+
+    /**
+     * 쿠폰 발급 업데이트
+     * @param epinDto
+     * @return
+     * @throws Exception
+     */
+    @Transactional(value = "mysqlTx")
+    public int updateProductCouponEpinCompareAndSet(ProductCouponEpinDto epinDto) throws  Exception {
+        return productCouponEpinRepository.updateProductCouponEpinCompareAndSet(epinDto);
+    }
+
 
 }

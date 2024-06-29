@@ -4,6 +4,7 @@ import com.flab.blackfriday.auth.member.dto.MemberSession;
 import com.flab.blackfriday.common.controller.BaseModuleController;
 import com.flab.blackfriday.common.dto.ResultVO;
 import com.flab.blackfriday.common.exception.NoExistAuthException;
+import com.flab.blackfriday.modules.product.coupon.domain.ProductCouponEpin;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponDefaultDto;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponDto;
 import com.flab.blackfriday.modules.product.coupon.dto.ProductCouponEpinDto;
@@ -12,6 +13,7 @@ import com.flab.blackfriday.modules.product.coupon.dto.action.ProductCouponEpinR
 import com.flab.blackfriday.modules.product.coupon.dto.action.ProductCouponEpinUpdateRequest;
 import com.flab.blackfriday.modules.product.coupon.kafka.CouponConsumerService;
 import com.flab.blackfriday.modules.product.coupon.kafka.CouponProducerService;
+import com.flab.blackfriday.modules.product.coupon.service.ProductCouponAppService;
 import com.flab.blackfriday.modules.product.coupon.service.ProductCouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
@@ -41,6 +43,8 @@ import java.util.concurrent.CompletableFuture;
 public class ProductCouponUserController extends BaseModuleController {
 
     private final ProductCouponService productCouponService;
+
+    private final ProductCouponAppService productCouponAppService;
 
     private final CouponProducerService couponProducerService;
 
@@ -143,8 +147,9 @@ public class ProductCouponUserController extends BaseModuleController {
         return ResponseEntity.ok().body(new ResultVO("OK"));
     }
 
+
     /**
-     * 쿠폰 발급 결과
+     * 쿠폰 발급 결과 (효과 없음..)
      * @return
      */
     @PostMapping(API_URL+"/coupon/create/result")
@@ -165,5 +170,27 @@ public class ProductCouponUserController extends BaseModuleController {
         }
 
         return ResponseEntity.ok(map.get("couponNum"));
+    }
+
+
+    /**
+     * 쿠폰 생성
+     * @param productCouponEpinRequest
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(value=API_URL+"/product/coupon/epin/create")
+    public ResponseEntity<?>  createProductCouponEpin2(@RequestBody ProductCouponEpinRequest productCouponEpinRequest)  throws Exception {
+
+        if(!memberSession.isAuthenticated()){
+            logger.error("### 인증되지 않은 접근. ### ");
+            throw new NoExistAuthException("회원 인증을 진행해주시기 바랍니다.",HttpStatus.UNAUTHORIZED.name());
+        }
+
+        ProductCouponEpinDto epinDto = ProductCouponEpinDto.createOf(productCouponEpinRequest);
+        epinDto.setId(memberSession.getMemberSession().getId());
+        String couponNum = productCouponAppService.updateProductCouponEpinIssueToMember(epinDto);
+
+        return ResponseEntity.ok(couponNum);
     }
 }

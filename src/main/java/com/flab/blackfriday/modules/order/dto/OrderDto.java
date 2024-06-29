@@ -1,5 +1,6 @@
 package com.flab.blackfriday.modules.order.dto;
 
+import com.flab.blackfriday.logging.system.DetailLoggerSetter;
 import com.flab.blackfriday.modules.order.domain.Order;
 import com.flab.blackfriday.modules.order.dto.action.OrderCreateRequest;
 import com.flab.blackfriday.modules.order.dto.action.OrderItemRequest;
@@ -26,8 +27,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
-public class OrderDto {
+public class OrderDto implements DetailLoggerSetter {
     
     /**일련번호*/
     private Long idx = 0L;
@@ -90,5 +90,34 @@ public class OrderDto {
         orderDto.setPrice(amount);
         return orderDto;
     }
-    
+
+    @Override
+    public String toString() {
+        return "OrderDto{" +
+                "idx=" + idx +
+                ", pNum='" + pNum + '\'' +
+                ", id='" + id + '\'' +
+                ", orderStatus='" + orderStatus + '\'' +
+                ", payStatus='" + payStatus + '\'' +
+                ", price=" + price +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                ", itemList=" + itemList +
+                '}';
+    }
+
+    @Override
+    public String printSystemString() {
+        return "OrderDto{" +
+                "idx=" + idx +
+                ", pNum='" + pNum + '\'' +
+                ", id='" + id + '\'' +
+                ", orderStatus='" + orderStatus + '\'' +
+                ", payStatus='" + payStatus + '\'' +
+                ", price=" + price +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                ", itemList=" + itemList +
+                '}';
+    }
 }

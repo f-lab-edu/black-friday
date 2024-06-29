@@ -27,7 +27,8 @@ import java.util.List;
  */
 @Repository
 public class CategoryCustomRepositoryImpl extends BaseAbstractRepositoryImpl implements CategoryCustomRepository {
-    protected CategoryCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
+
+    public CategoryCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
         super(entityManager, jpaQueryFactory);
     }
 

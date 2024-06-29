@@ -1,5 +1,6 @@
 package com.flab.blackfriday.modules.product.coupon.dto;
 
+import com.flab.blackfriday.logging.system.DetailLoggerSetter;
 import com.flab.blackfriday.modules.product.coupon.domain.ProductCouponEpin;
 import com.flab.blackfriday.modules.product.coupon.dto.action.ProductCouponEpinUpdateRequest;
 import com.flab.blackfriday.modules.product.coupon.dto.action.ProductCouponEpinRequest;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCouponEpinDto {
+public class ProductCouponEpinDto implements DetailLoggerSetter {
 
     private String couponNum = "";
 
@@ -79,4 +80,17 @@ public class ProductCouponEpinDto {
         return dto;
     }
 
+    @Override
+    public String printSystemString() {
+        return "ProductCouponEpinDto{" +
+                "couponNum='" + couponNum + '\'' +
+                ", idx=" + idx +
+                ", id='" + id + '\'' +
+                ", useType='" + useType + '\'' +
+                ", useStatus='" + useStatus + '\'' +
+                ", productCouponDto=" + productCouponDto +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                '}';
+    }
 }

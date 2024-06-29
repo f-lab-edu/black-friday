@@ -12,6 +12,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
@@ -31,8 +32,9 @@ import java.util.List;
  */
 @Repository
 public class ProductCouponEpinCustomRepositoryImpl extends BaseAbstractRepositoryImpl implements ProductCouponEpinCustomRepository {
-    protected ProductCouponEpinCustomRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
-        super(entityManager, jpaQueryFactory);
+
+    public ProductCouponEpinCustomRepositoryImpl(EntityManager mysqlEntityManager, JPAQueryFactory jpaQueryFactory) {
+        super(mysqlEntityManager, jpaQueryFactory);
     }
 
     private BooleanBuilder commonQuery(ProductCouponDefaultDto searchDto) throws Exception {

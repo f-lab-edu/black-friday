@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -81,7 +81,7 @@ public class CategoryService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @CacheEvict(value = "category_list",key = "#dto.parentCd")
     public void saveCategory(CategoryDto dto) throws Exception {
         if(dto.getParentCd().isEmpty()){
@@ -90,7 +90,7 @@ public class CategoryService {
         categoryRepository.save(dto.toEntity());
     }
 
-    @Transactional
+    @Transactional(value = "mysqlTx")
     @CacheEvict(value = "category_list",key = "#dto.parentCd")
     public void deleteCategory(CategoryDto dto) throws Exception {
         //만약 parentCd가 _TOP일 경우 삭제시 아래 관련 카테고리는 다 삭제되어야 함
