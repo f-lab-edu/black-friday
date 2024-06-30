@@ -1,0 +1,162 @@
+version: "3.8"
+
+services:
+  # config 1
+  mg_config1:
+    image: mongo
+    container_name: config1
+    hostname: config1
+    restart: always
+    ports:
+      - "10010:27017"
+    volumes:
+      - ./db_config/config1:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --configsvr --replSet configReplica --bind_ip_all --port 27017 --dbpath /data/db
+
+  #config 2
+  mg_config2:
+    image: mongo
+    container_name: config2
+    hostname: config2
+    restart: always
+    ports:
+      - "10011:27017"
+    volumes:
+      - ./db_config/config2:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --configsvr --replSet configReplica --bind_ip_all --port 27017 --dbpath /data/db
+
+  # config3
+  mg_config3:
+    image: mongo
+    container_name: config3
+    hostname: config3
+    restart: always
+    ports:
+      - "10012:27017"
+    volumes:
+      - ./db_config/config3:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --configsvr --replSet configReplica --bind_ip_all --port 27017 --dbpath /data/db
+
+
+  # shard
+  mg_sh1Primary:
+    image: mongo
+    restart: always
+    container_name: sh1Primary
+    hostname: sh1Primary
+    ports:
+      - "20010:27017"
+    volumes:
+      - ./db_shard1/sh1Primary:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --shardsvr --replSet sh1Replica --bind_ip_all --port 27017 --dbpath /data/db
+
+  mg_sh1Secondary:
+    image: mongo
+    restart: always
+    container_name: sh1Secondary
+    hostname: sh1Secondary
+    ports:
+      - "20011:27017"
+    volumes:
+      - ./db_shard1/sh1Secondary:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --shardsvr --replSet sh1Replica --bind_ip_all --port 27017 --dbpath /data/db
+
+  mg_sh1Arbiter:
+    image: mongo
+    restart: always
+    container_name: sh1Arbiter
+    hostname: sh1Arbiter
+    ports:
+      - "20012:27017"
+    volumes:
+      - ./db_shard1/sh1Arbiter:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --shardsvr --replSet sh1Replica --bind_ip_all --port 27017 --dbpath /data/db
+
+
+  mg_sh2Primary:
+    image: mongo
+    restart: always
+    container_name: sh2Primary
+    hostname: sh2Primary
+    ports:
+      - "20020:27017"
+    volumes:
+      - ./db_shard2/sh2Primary:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --shardsvr --replSet sh2Replica --bind_ip_all --port 27017 --dbpath /data/db
+
+  mg_sh2Secondary:
+    image: mongo
+    restart: always
+    container_name: sh2Secondary
+    hostname: sh2Secondary
+    ports:
+      - "20021:27017"
+    volumes:
+      - ./db_shard2/sh2Secondary:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --shardsvr --replSet sh2Replica --bind_ip_all --port 27017 --dbpath /data/db
+
+  mg_sh2Arbiter:
+    image: mongo
+    restart: always
+    container_name: sh2Arbiter
+    hostname: sh2Arbiter
+    ports:
+      - "20022:27017"
+    volumes:
+      - ./db_shard2/sh2Arbiter:/data/db
+#      - ./key:/key/mongodb
+    command: mongod --shardsvr --replSet sh2Replica --bind_ip_all --port 27017 --dbpath /data/db
+
+  # mongos
+  mongos:
+    image: mongo
+    restart: always
+    container_name: mongos
+    hostname: mongos
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    command: mongos --configdb configReplica/172.25.16.1:10010,172.25.16.1:10011,172.25.16.1:10012 --bind_ip 0.0.0.0 --port 27017
+    ports:
+      - "20030:27017"
+
+#  db_mongos2:
+#    image: mongo
+#    restart: always
+#    container_name: mongos2
+#    hostname: mongos2
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: root
+#    command: mongos --configdb configReplica/172.25.16.1:10010,172.25.16.1:10011,172.25.16.1:10012 --bind_ip 0.0.0.0 --port 27017
+#    ports:
+#      - "20031:27017"
+
+#  nginx:
+#    image: nginx:latest
+#    container_name: nginx
+#    restart: always
+#    ports:
+#      - "3015:80"
+#    volumes:
+#      - ./key:/key/mongodb
+#      # kafka 설정 파일들
+
+volumes:
+  config1: {}
+  config2: {}
+  config3: {}
+  sh1Primary : {}
+  sh1Secondary : {}
+  sh1Arbiter : {}
+  sh2Primary : {}
+  sh2Secondary : {}
+  sh2Arbiter : {}
