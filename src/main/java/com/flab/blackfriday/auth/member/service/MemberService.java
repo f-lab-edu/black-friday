@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -50,7 +50,7 @@ public class MemberService {
      * @return
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void saveMember(MemberCreateRequest memberCreateRequest) throws Exception {
         Member member = memberRepository.findById(memberCreateRequest.getId()).orElse(null);
         if(member != null ){
@@ -66,7 +66,7 @@ public class MemberService {
      * @param dto
      * @throws Exception
      */
-    @Transactional
+    @Transactional(value = "mysqlTx")
     public void deleteMember(MemberDto dto) throws Exception {
         memberRepository.deleteById(dto.getId());
     }

@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true,value = "mysqlTx")
 public class JwtService {
 
     private final MemberRepository memberRepository;

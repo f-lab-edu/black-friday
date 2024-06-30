@@ -20,8 +20,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AppConfig {
 
+//    @PersistenceContext(unitName = "mysqlEntityManager")
     @PersistenceContext
-    public EntityManager em;
+    public EntityManager entityManager;
 
     /**
      *query dsl
@@ -29,7 +30,7 @@ public class AppConfig {
      */
     @Bean
     public JPAQueryFactory queryFactory() {
-        return new JPAQueryFactory(em);
+        return new JPAQueryFactory(entityManager);
     }
 
 }
