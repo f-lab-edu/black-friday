@@ -54,3 +54,10 @@
 3. 동시성 제어
     1. 카프카 시스템을 통해 비관적 락 또는 낙관적 락를 사용하지 않고 처리할 수 있습니다.
         1. 특히 비관적 락과 같이 데이터베이스에 악영향을 줄 수 있는 상황을 만들지 않을 수 있습니다.
+      
+
+### 카프카를 사용한 자세한 내용 보기 
+1. [카프카란 무엇인가](https://github.com/f-lab-edu/black-friday/wiki/Apache-Kafka-%EB%9E%80-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80%3F)
+2. [카프카 적용하기1](https://github.com/f-lab-edu/black-friday/wiki/SpringBoot-Apache-Kafka-Part(1))
+3. [카프카 적용하기2](https://github.com/f-lab-edu/black-friday/wiki/SpringBoot-Apache-Kafka-Part(2))
+
