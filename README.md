@@ -11,7 +11,7 @@
 * MSA 방식을 고려하는 방식으로 구현
 
 # ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 사용기술
-`Spring Boot` `Java 17` `JPA` `MYSQL` `Docker` `Intellij IDEA` `K6` `Grafana` `Influxdb`
+`Spring Boot` `Java 17` `JPA` `MYSQL` `MongoDB` `Docker` `Intellij IDEA` `K6` `Grafana` `Influxdb` `Apache Kafka`
 
 # ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 작업기간
 `2024.4.15` ~ 
