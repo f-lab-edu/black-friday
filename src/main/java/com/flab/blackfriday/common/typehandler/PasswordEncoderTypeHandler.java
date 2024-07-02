@@ -41,7 +41,7 @@ public class PasswordEncoderTypeHandler{
 
         boolean result = false;
         try {
-            result = passwordEncoder.matches(password, encodedPassword);
+            result = passwordEncoder.matches(password,encodedPassword);
         }catch (Exception e) {
             LOGGER.error("### encode check error : {}",e.getMessage());
         }

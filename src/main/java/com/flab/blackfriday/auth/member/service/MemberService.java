@@ -1,10 +1,13 @@
 package com.flab.blackfriday.auth.member.service;
 
 import com.flab.blackfriday.auth.member.domain.Member;
+import com.flab.blackfriday.auth.member.dto.MemberCreateRequest;
 import com.flab.blackfriday.auth.member.dto.MemberDto;
+import com.flab.blackfriday.auth.member.dto.MemberSummaryResponse;
 import com.flab.blackfriday.auth.member.repository.MemberRepository;
 import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,16 +51,14 @@ public class MemberService {
      * @throws Exception
      */
     @Transactional
-    public void saveMember(MemberDto dto) throws Exception {
-        Member member = memberRepository.findById(dto.getId()).orElse(null);
-        if(member == null ){
-            //비밀번호 암호화 처리
-            if(dto.getPassword() != null && !dto.getPassword().isEmpty()) {
-                String password = dto.getPassword();
-                dto.setPassword(PasswordEncoderTypeHandler.encode(password));
-            }
+    public void saveMember(MemberCreateRequest memberCreateRequest) throws Exception {
+        Member member = memberRepository.findById(memberCreateRequest.getId()).orElse(null);
+        if(member != null ){
+            member.addNickname(memberCreateRequest.getNickname());
+            memberRepository.save(member);
+        }else {
+            memberRepository.save(memberCreateRequest.toCreateEntity());
         }
-        memberRepository.save(dto.toEntity());
     }
 
     /**
@@ -68,6 +69,12 @@ public class MemberService {
     @Transactional
     public void deleteMember(MemberDto dto) throws Exception {
         memberRepository.deleteById(dto.getId());
+    }
+
+    @Cacheable(value = "member_session", key = "#loginId")
+    public MemberSummaryResponse selectMemberSession(String loginId) {
+        Member member = memberRepository.findById(loginId).orElse(null);
+        return member == null ? null : MemberSummaryResponse.summaryViewOf(MemberDto.of(member));
     }
 
 }

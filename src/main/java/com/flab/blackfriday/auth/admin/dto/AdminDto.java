@@ -25,6 +25,8 @@ public class AdminDto {
 
     private String id = "";
 
+    private String name = "";
+
     private String password = "";
 
     private LocalDateTime createDate;
@@ -37,6 +39,15 @@ public class AdminDto {
      */
     public Admin toEntity() {
         return Admin.builder().dto(this).build();
+    }
+
+    public static AdminDto of(Admin admin){
+        AdminDto dto = new AdminDto();
+        dto.setId(admin.getId());
+        dto.setPassword(admin.getPassword());
+        dto.setCreateDate(admin.getCreateDate());
+        dto.setModifyDate(admin.getModifyDate());
+        return dto;
     }
 
 }

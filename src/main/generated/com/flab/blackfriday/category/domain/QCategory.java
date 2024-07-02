@@ -29,6 +29,10 @@ public class QCategory extends EntityPathBase<Category> {
 
     public final NumberPath<Integer> ord = createNumber("ord", Integer.class);
 
+    public final StringPath parentCd = createString("parentCd");
+
+    public final StringPath useYn = createString("useYn");
+
     public QCategory(String variable) {
         super(Category.class, forVariable(variable));
     }
