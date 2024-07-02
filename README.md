@@ -28,6 +28,7 @@
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 요점
 + [성능 테스트 해보기](https://github.com/f-lab-edu/black-friday/blob/feature/performance/README.md)
 + [카프카 적용기](https://github.com/f-lab-edu/black-friday/blob/feature/coupon_kafka/README.md)
++ [로깅 시스템 적용하기](https://github.com/f-lab-edu/black-friday/wiki/%EC%8B%9C%EC%8A%A4%ED%85%9C-%EB%A1%9C%EA%B9%85-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0)
 
 
 ## ![icons8-쇼핑백-30](https://github.com/f-lab-edu/black-friday/assets/67618667/0cbb168f-9353-4572-ac67-abf7ae909755) 프로젝트 패키지 구조
