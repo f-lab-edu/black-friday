@@ -36,7 +36,7 @@
 
 > 쿠폰 생성 및 바로 요청
 
-![스크린샷 2024-06-11 012104](https://github.com/f-lab-edu/black-friday/assets/67618667/6b30c5ed-d768-4b50-a0ec-ca2e3e66ecb6)
+![image](https://github.com/f-lab-edu/black-friday/assets/67618667/39751bb4-195e-4c67-aa30-62dc480015f2)
 
 1. 사용자가 쿠폰 발급을 신청하게 됩니다.
 2. 쿠폰 발급이 발생하게 되면, Producer를 통해 Broker 영역으로 데이터가 넘어가게 됩니다.
