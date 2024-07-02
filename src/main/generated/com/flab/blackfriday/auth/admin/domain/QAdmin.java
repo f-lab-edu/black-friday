@@ -25,6 +25,8 @@ public class QAdmin extends EntityPathBase<Admin> {
 
     public final DateTimePath<java.time.LocalDateTime> modifyDate = createDateTime("modifyDate", java.time.LocalDateTime.class);
 
+    public final StringPath name = createString("name");
+
     public final StringPath password = createString("password");
 
     public QAdmin(String variable) {

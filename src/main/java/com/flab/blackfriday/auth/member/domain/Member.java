@@ -1,6 +1,8 @@
 package com.flab.blackfriday.auth.member.domain;
 
+import com.flab.blackfriday.auth.member.dto.MemberCreateRequest;
 import com.flab.blackfriday.auth.member.dto.MemberDto;
+import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
@@ -55,10 +57,21 @@ public class Member implements Persistable<String> {
     @Builder
     public Member(MemberDto dto) {
         this.id = dto.getId();
-        this.password = dto.getNickname();
+        this.password = dto.getPassword();
         this.nickname = dto.getNickname();
         this.createDate = dto.getCreateDate();
         this.modifyDate = dto.getModifyDate();
+    }
+
+    @Builder(builderMethodName = "createMember")
+    public Member(MemberCreateRequest memberCreateRequest){
+        this.id = memberCreateRequest.getId();
+        this.password = PasswordEncoderTypeHandler.encode(memberCreateRequest.getPassword());
+        this.nickname = memberCreateRequest.getNickname();
+    }
+
+    public void addNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void addId(String id){

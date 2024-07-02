@@ -2,6 +2,8 @@ package com.flab.blackfriday.common;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
  * -----------------------------------------------------------
  * 2024-04-19        rhkdg       최초 생성
  */
+@RequiredArgsConstructor
 public abstract class BaseAbstractRepositoryImpl {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -24,8 +27,4 @@ public abstract class BaseAbstractRepositoryImpl {
 
     protected final JPAQueryFactory jpaQueryFactory;
 
-    protected BaseAbstractRepositoryImpl(EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
-        this.entityManager = entityManager;
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
 }

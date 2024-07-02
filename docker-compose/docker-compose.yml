@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  # mariadb 설정
+  db_master:
+    image: mariadb:10.6 # mariadb 10.6 버전 이미지 사용
+    container_name: db_master # container 이름 설정
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: blackfriday # container 생성 후 root의 비밀번호를 저장한 파일을 설정함으로서 root 비밀번호를 설정
+      MARIADB_DATABASE: blackfriday_dev
+      MARIADB_USER: blackfriday
+      MARIADB_PASSWORD: blackfriday
+    volumes:
+      - ./master_db/data:/var/lib/mysql # 각종 log와 index등이 volume이 저장되는 디렉토리
+      - ./master_db/config/:/etc/mysql/conf.d # 이전에 나왔던 ./master/config/my.cnf 를 써줌으써 설정을 reference해줍니다.
+    ports:
+      - "33306:3306" # 이 옵션은 docker engine에게 각 container에게 포트를 수동으로 설정하게 해줍니다.
+
+
+  # kafka 설정 파일들
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+#      KAFKA_BROKER_ID : 1
+      KAFKA_ADVERTISED_HOST_NAME: host.docker.internal
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CREATE_TOPICS: "coupon_create:10:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
+

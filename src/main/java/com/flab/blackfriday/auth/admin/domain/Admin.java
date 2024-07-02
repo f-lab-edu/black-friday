@@ -1,10 +1,9 @@
 package com.flab.blackfriday.auth.admin.domain;
 
+import com.flab.blackfriday.auth.admin.dto.AdminCreateRequest;
 import com.flab.blackfriday.auth.admin.dto.AdminDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.flab.blackfriday.common.typehandler.PasswordEncoderTypeHandler;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +35,9 @@ public class Admin {
     @Id
     private String id;
 
+    @Comment("이름")
+    private String name;
+
     @Comment("비밀번호")
     private String password;
 
@@ -50,8 +52,24 @@ public class Admin {
     @Builder
     public Admin(AdminDto dto) {
         this.id = dto.getId();
+        this.name = dto.getName();
         this.password = dto.getPassword();
         this.createDate = dto.getCreateDate();
         this.modifyDate = dto.getModifyDate();
+    }
+
+    @Builder(builderMethodName = "createAdmin")
+    public Admin(AdminCreateRequest request) {
+        this.id = request.getId();
+        this.name = request.getName();
+        this.password = PasswordEncoderTypeHandler.encode(request.getPassword());
+    }
+
+    public void addName(String name) {
+        this.name = name;
+    }
+
+    public void addPassword(String password) {
+        this.password = PasswordEncoderTypeHandler.encode(password);
     }
 }

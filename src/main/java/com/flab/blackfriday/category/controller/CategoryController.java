@@ -2,9 +2,11 @@ package com.flab.blackfriday.category.controller;
 
 import com.flab.blackfriday.category.dto.CategoryDefaultDto;
 import com.flab.blackfriday.category.dto.CategoryDto;
+import com.flab.blackfriday.category.dto.CategoryListAndTotCntResponse;
 import com.flab.blackfriday.category.dto.CategoryRequest;
 import com.flab.blackfriday.category.service.CategoryService;
 import com.flab.blackfriday.common.controller.BaseController;
+import com.flab.blackfriday.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,31 +40,25 @@ public class CategoryController extends BaseController {
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/category/list")
-    public Map<String,Object> selectCategoryList(CategoryDefaultDto searchDto) throws Exception {
-
+    public CategoryListAndTotCntResponse selectCategoryList(CategoryDefaultDto searchDto) throws Exception {
         long totCnt = categoryService.selectCategoryTotalCount(searchDto);
         List<CategoryDto> resultList = categoryService.selectCategoryList(searchDto);
-        modelMap.put("resultList",resultList);
-        modelMap.put("totCnt",totCnt);
-
-        return modelMap;
+        return CategoryListAndTotCntResponse.of(resultList,totCnt);
     }
 
     /**
      * 상세 조회
      * @param categCd
-     * @return
+     * @return CategoryDto
      * @throws Exception
      */
     @GetMapping(MGN_URL+"/category/view/{categCd}")
-    public Map<String,Object> selectCategory(@PathVariable String categCd) throws Exception {
+    public CategoryDto selectCategory(@PathVariable String categCd) throws Exception {
 
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setCategCd(categCd);
         categoryDto = categoryService.selectCategory(categoryDto);
-        modelMap.put("categoryDto",categoryDto);
-
-        return modelMap;
+        return categoryDto;
     }
 
     /**
@@ -78,12 +74,10 @@ public class CategoryController extends BaseController {
             categoryService.saveCategory(CategoryDto.requestOf(categoryRequest));
         }catch (Exception e) {
             logger.error("insert category error : {}",e.getMessage());
-            modelMap.put("msg","카테고리 등록시 오류가 발생했습니다.");
-            return new ResponseEntity<>(modelMap, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("카테고리 등록시 오류가 발생했습니다.",null), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","등록 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("등록 되었습니다.",null),HttpStatus.OK);
     }
 
     /**
@@ -98,20 +92,17 @@ public class CategoryController extends BaseController {
         try{
             CategoryDto prevDto = categoryService.selectCategory(CategoryDto.requestOf(categoryRequest));
             if(prevDto == null){
-                modelMap.put("msg","잘못된 접근입니다.");
-                return new ResponseEntity<>(modelMap,HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new CommonResponse("잘못된 접근입니다.",null),HttpStatus.BAD_REQUEST);
             }
             CategoryDto categoryDto = CategoryDto.requestOf(categoryRequest);
             categoryDto.setCreateDate(prevDto.getCreateDate());
             categoryService.saveCategory(categoryDto);
         }catch (Exception e) {
             logger.error("category update error : {}",e.getMessage());
-            modelMap.put("msg","카테고리 수정시 오류가 발생했습니다.");
-            return new ResponseEntity<>(modelMap,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("카테고리 수정시 오류가 발생했습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","수정 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("수정 되었습니다.",null),HttpStatus.OK);
     }
 
     /**
@@ -129,11 +120,9 @@ public class CategoryController extends BaseController {
             categoryService.deleteCategory(categoryDto);
         }catch (Exception e) {
             logger.error("delete category error : {}",e.getMessage());
-            modelMap.put("msg","카테고리 삭제시 오류가 발생하였습니다.");
-            return new ResponseEntity<>(modelMap,HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CommonResponse("카테고리 삭제시 오류가 발생하였습니다.",null),HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        modelMap.put("msg","삭제 되었습니다.");
-        return new ResponseEntity<>(modelMap,HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse("삭제 되었습니다.",null),HttpStatus.OK);
     }
 }

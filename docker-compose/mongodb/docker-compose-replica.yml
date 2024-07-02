@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  # primary mongodb
+  db_mongodb1:
+    image: mongo
+    container_name: mongo1
+    hostname: mongo1
+    restart: always
+    ports:
+      - "27018:27018"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+       - ./mongo_db/mongo1:/data/db
+       - ./key:/key/mongodb
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /key/mongodb/mongodb.key --port 27018
+
+  # secondary mongodb
+  db_mongodb2:
+    image: mongo
+    container_name: mongo2
+    hostname: mongo2
+    restart: always
+    ports:
+      - "27019:27019"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./mongo_db/mongo2:/data/db
+      - ./key:/key/mongodb
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /key/mongodb/mongodb.key --port 27019
+#    depends_on:
+#      - db_mongodb1
+
+  db_mongodb3:
+    image: mongo
+    container_name: mongo3
+    hostname: mongo3
+    restart: always
+    ports:
+      - "27020:27020"
+    #    environment:
+    #      MONGO_INITDB_ROOT_USERNAME: root
+    #      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./mongo_db/mongo3:/data/db
+      - ./key:/key/mongodb
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /key/mongodb/mongodb.key --port 27020
+  #    depends_on:
+  #      - db_mongodb1
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "3015:80"
+    volumes:
+      - ./key:/key/mongodb
+      # kafka 설정 파일들

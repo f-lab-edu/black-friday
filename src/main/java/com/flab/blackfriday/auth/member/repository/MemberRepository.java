@@ -3,6 +3,7 @@ package com.flab.blackfriday.auth.member.repository;
 import com.flab.blackfriday.auth.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 /**
  * packageName    : com.flab.blackfriday.auth.member.repository
